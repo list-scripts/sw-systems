@@ -44,4 +44,5 @@ end
 IncludeDir(rootDirectory .. "/config")
 IncludeDir(rootDirectory .. "/lang")
 IncludeDir(rootDirectory .. "/common")
-IncludeDir(rootDirectory .. "/modules")
+IncludeDir(rootDirectory .. "/power_manager")
+IncludeDir(rootDirectory .. "/systems")

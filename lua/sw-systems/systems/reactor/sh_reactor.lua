@@ -29,3 +29,7 @@ end
 function SWS.Reactor:GetHeat()
     return SWS.Reactor.heat
 end
+
+if SERVER then
+    SWS.Power:RegisterPowerProvider("reactor", SWS.Reactor.GetPowerOutput)
+end

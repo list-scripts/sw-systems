@@ -46,8 +46,6 @@ timer.Create("SWS.Reactor.heatClock", SWS.Reactor.HEAT_INTERVAL, 0, function()
     elseif diff < 0 then
         SWS.Reactor:SetHeat(SWS.Reactor:GetHeat()-math.abs(diff))
     end
-
-    
 end)
 
 ////////////////
