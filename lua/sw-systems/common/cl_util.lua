@@ -48,3 +48,48 @@ function draw.SpacedText(text, font, x, y, color, spacing)
     end
 end
 
+///////////
+// Debug //
+///////////
+
+local lastDraw = 0
+local UPDATE_TIME = 1
+
+local i = 0
+
+local function addText(title, val1, val2)
+    if not val1 then
+        debugoverlay.ScreenText(0.01, 0.2 + i * 0.015, title, UPDATE_TIME, color_white)
+        i = i + 1
+        return
+    end
+
+    debugoverlay.ScreenText(0.01, 0.2 + i * 0.015, "\t" .. title .. ":", UPDATE_TIME, color_white)
+
+    if val2 then
+        debugoverlay.ScreenText(0.08, 0.2 + i * 0.015, val1 .. " / " .. val2, UPDATE_TIME, color_white)
+    else
+        debugoverlay.ScreenText(0.08, 0.2 + i * 0.015, val1, UPDATE_TIME, color_white)
+    end
+    i = i + 1
+end
+
+local devConvar = GetConVar("developer")
+
+hook.Add("Think", "SWS.Reactor.Debug", function()
+    if not devConvar:GetBool() then return end
+    if lastDraw > CurTime() then return end
+
+    local ply = LocalPlayer()
+
+    i = 0
+
+    addText("┌──── Realtime Stats ────┐")
+        addText("status", SWS.Reactor.status)
+        addText("powerOutput", SWS.Reactor.powerOutput, SWS.Reactor.MAX_POWER_OUTPUT)
+        addText("coolingPower", SWS.Reactor.coolingPower, SWS.Reactor.MAX_COOLING_POWER)
+        addText("heat", SWS.Reactor.heat, SWS.Reactor.MAX_HEAT)
+    addText("└────────────────────┘")
+
+    lastDraw = CurTime() + UPDATE_TIME
+end)
