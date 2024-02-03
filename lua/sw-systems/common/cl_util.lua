@@ -1,6 +1,8 @@
 SWS = SWS or {}
 SWS.ENUM = SWS.ENUM or {}
 
+-- maybe use this later, dunno
+--[[
 local function drawVerticalStripedRect(x, y, w, h, color1, color2, thickness)
     surface.SetDrawColor(color1)
     surface.DrawRect(x, y, w, h)
@@ -27,7 +29,7 @@ local function drawHorizontalStripedRect(x, y, w, h, color1, color2, thickness)
     local remainder = w%thickness
 
     surface.DrawRect(x + w - remainder, y, remainder, h)
-end
+end]]
 
 hook.Add("HUDPaint", "Test", function()
     --drawVerticalStripedRect(100, 100, 60, 200, Color(255, 255, 255), Color(0, 0, 0), 4)
