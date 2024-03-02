@@ -4,26 +4,12 @@ SWS.Power = SWS.Power or {}
 
 SWS.Power.POLL_INTERVAL = 5
 
-SWS.Power.totalPower = 0
-SWS.Power.freePower = 0
-
-SWS.Power.powerProvider = {}
-SWS.Power.systems = {}
-
 //////////////////////
 // Power Management //
 //////////////////////
 
-function SWS.Power:GetTotalPower()
-    return SWS.Power.totalPower
-end
-
 function SWS.Power:SetTotalPower(newPower)
     SWS.Power.totalPower = math.max(newPower, 0)
-end
-
-function SWS.Power:GetFreePower()
-    return SWS.Power.freePower
 end
 
 function SWS.Power:SetFreePower(newPower)
@@ -45,37 +31,42 @@ function SWS.Power:RemovePower(power)
     SWS.Power:SetFreePower(SWS.Power:GetFreePower() - power)
 end
 
+function SWS.Power:SetSystemPower(identifier, newValue)
+    SWS.Power:GetSystem(identifier).power = math.Clamp(newValue, 0, SWS.Power:GetSystemMaxPower(index))
+end
+
 -- this sets the value, if possible. It does not just add.
 -- prolly way to complicated... can't think of a better way right now tho :/
-function SWS.Power:AllocatePower(name, power)
-    local systemIndex = SWS.Power:GetSystemIndexByName(name)
-    local system = SWS.Power.systems[systemIndex]
-    if system.currentPower == power then return end
+function SWS.Power:AllocatePower(identifier, power)
+    local system = SWS.Power:GetSystem(identifier)
+    if system.power == power then return end
 
     power = math.Clamp(power, 0, system.maxPower)
-    local adding = system.currentPower < power and true or false
-    local powerDiff = math.abs(system.currentPower - power)
+    local adding = system.power < power and true or false
+    local powerDiff = math.abs(system.power - power)
 
     if adding then
         if SWS.Power:GetFreePower() <= 0 then return end
         local additionalPower = SWS.Power:GetFreePower() >= powerDiff and powerDiff or SWS.Power:GetFreePower()
 
-        SWS.Power.systems[systemIndex].currentPower = SWS.Power.systems[systemIndex].currentPower + additionalPower
+        SWS.Power:SetSystemPower(identifier, SWS.Power:GetSystemPower(identifier) + additionalPower)
         SWS.Power:SetFreePower(SWS.Power:GetFreePower() - additionalPower)
     else
-        SWS.Power.systems[systemIndex].currentPower = SWS.Power.systems[systemIndex].currentPower - powerDiff
+        SWS.Power:SetSystemPower(identifier, SWS.Power:GetSystemPower(identifier) - powerDiff)
         SWS.Power:SetFreePower(SWS.Power:GetFreePower() + powerDiff)
     end
 
-    SWS.Power.systems[systemIndex].checkNewAllocation(SWS.Power.systems[systemIndex].currentPower) -- inform the system that its power allocation has changed
+    -- inform the system that its power allocation has changed
+    local updateFunc = SWS.Power:GetSystemUpdateFunc(identifier)
+    updateFunc(SWS.Power:GetSystemPower(identifier))
 end
 
 ///////////////////////////////
 // Power Provider Management //
 ///////////////////////////////
 
-function SWS.Power:RegisterPowerProvider(name, getPowerFunction)
-    table.insert(SWS.Power.powerProvider, {name = name, GetPower = getPowerFunction})
+function SWS.Power:RegisterPowerProvider(name, getPowerFunc)
+    table.insert(SWS.Power.powerProvider, {name = name, getPower = getPowerFunc})
 end
 
 function SWS.Power:UnregisterPowerProvider(name)
@@ -89,7 +80,7 @@ end
 timer.Create("SWS.Power.PollPower", SWS.Power.POLL_INTERVAL, 0, function()
     local availablePower = 0
     for i,v in ipairs(SWS.Power.powerProvider) do
-        availablePower = availablePower + v:GetPower()
+        availablePower = availablePower + v:getPower()
     end
 
     if availablePower > SWS.Power:GetTotalPower() then
@@ -103,16 +94,8 @@ end)
 // System Management //
 ///////////////////////
 
-function SWS.Power:GetSystemIndexByName(name)
-    for i,v in ipairs(SWS.Power.systems) do
-        if v.name == name then
-            return i
-        end
-    end
-end
-
-function SWS.Power:RegisterSystem(name, maxPower, checkNewAllocation)
-    table.insert(SWS.Power.systems, {name = name, currentPower = 0, maxPower = maxPower, checkNewAllocation = checkNewAllocation})
+function SWS.Power:RegisterSystem(name, maxPower, update)
+    table.insert(SWS.Power.systems, {name = name, power = 0, maxPower = maxPower, update = update})
 end
 
 function SWS.Power:UnregisterSystem(name)
@@ -123,22 +106,24 @@ function SWS.Power:UnregisterSystem(name)
     end
 end
 
-function SWS.Power:IncreaseSystemPriority(name)
-    local systemIndex = SWS.Power:GetSystemIndexByName(name)
-    if systemIndex <= 1 then return end
-
-    local temp = table.Copy(SWS.Power.systems[systemIndex])
-    SWS.Power.systems[systemIndex] = table.Copy(SWS.Power.systems[systemIndex-1])
-    SWS.Power.systems[systemIndex-1] = table.Copy(temp)
+local function swapSystems(index1, index2)
+    local temp = table.Copy(SWS.Power.systems[index1])
+    SWS.Power.systems[index1] = table.Copy(SWS.Power.systems[index2])
+    SWS.Power.systems[index2] = table.Copy(temp)
 end
 
-function SWS.Power:DecreaseSystemPriority(name)
-    local systemIndex = SWS.Power:GetSystemIndexByName(name)
-    if systemIndex >= #SWS.Power.systems then return end
+function SWS.Power:IncreaseSystemPriority(identifier)
+    local _, index = SWS.Power:GetSystem(identifier)
+    if index <= 1 then return end
 
-    local temp = table.Copy(SWS.Power.systems[systemIndex])
-    SWS.Power.systems[systemIndex] = table.Copy(SWS.Power.systems[systemIndex+1])
-    SWS.Power.systems[systemIndex+1] = table.Copy(temp)
+    swapSystems(index, index-1)
+end
+
+function SWS.Power:DecreaseSystemPriority(identifier)
+    local _, index = SWS.Power:GetSystem(identifier)
+    if index >= #SWS.Power.systems then return end
+
+    swapSystems(index, index+1)
 end
 
 SWS.Power:RegisterSystem("testSystem1", 10, function() end)
