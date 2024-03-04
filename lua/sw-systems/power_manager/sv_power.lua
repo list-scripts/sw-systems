@@ -19,16 +19,26 @@ end
 function SWS.Power:AddPower(power)
     SWS.Power:SetTotalPower(SWS.Power:GetTotalPower() + power)
     SWS.Power:SetFreePower(SWS.Power:GetFreePower() + power)
+
+    net.Start("SWS.Power.UpdatePower")
+        net.WriteUInt(SWS.Power:GetTotalPower(), 8)
+        net.WriteUInt(SWS.Power:GetFreePower(), 8)
+    net.Broadcast()
 end
 
 function SWS.Power:RemovePower(power)
     if SWS.Power.freePower < power then
         local remainder = math.abs(SWS.Power.totalPower - power)
-        -- remove the power we give systems by priority
+        -- remove the power we give systems by priority and resync systems
     end
     
     SWS.Power:SetTotalPower(SWS.Power:GetTotalPower() - power)
     SWS.Power:SetFreePower(SWS.Power:GetFreePower() - power)
+
+    net.Start("SWS.Power.UpdatePower")
+        net.WriteUInt(SWS.Power:GetTotalPower(), 8)
+        net.WriteUInt(SWS.Power:GetFreePower(), 8)
+    net.Broadcast()
 end
 
 function SWS.Power:SetSystemPower(identifier, newValue)
@@ -38,7 +48,7 @@ end
 -- this sets the value, if possible. It does not just add.
 -- prolly way to complicated... can't think of a better way right now tho :/
 function SWS.Power:AllocatePower(identifier, power)
-    local system = SWS.Power:GetSystem(identifier)
+    local system, index = SWS.Power:GetSystem(identifier)
     if system.power == power then return end
 
     power = math.Clamp(power, 0, system.maxPower)
@@ -59,6 +69,11 @@ function SWS.Power:AllocatePower(identifier, power)
     -- inform the system that its power allocation has changed
     local updateFunc = SWS.Power:GetSystemUpdateFunc(identifier)
     updateFunc(SWS.Power:GetSystemPower(identifier))
+
+    net.Start("SWS.Power.UpdateSystem")
+        net.WriteUInt(index, 8)
+        net.WriteString(util.TableToJSON(table.Copy(system)))
+    net.Broadcast()
 end
 
 ///////////////////////////////
@@ -95,21 +110,34 @@ end)
 ///////////////////////
 
 function SWS.Power:RegisterSystem(name, maxPower, update)
-    table.insert(SWS.Power.systems, {name = name, power = 0, maxPower = maxPower, update = update})
+    local system = {name = name, power = 0, maxPower = maxPower, update = update}
+    table.insert(SWS.Power.systems, system)
+
+    net.Start("SWS.Power.RegisterSystem")
+        net.WriteString(util.TableToJSON(table.Copy(system)))
+    net.Broadcast()
 end
 
-function SWS.Power:UnregisterSystem(name)
-    for i,v in ipairs(SWS.Power.systems) do
-        if v.name == name then
-            table.remove(SWS.Power.systems, i)
-        end
-    end
+function SWS.Power:UnregisterSystem(identifier)
+    local _, index = SWS.Power:GetSystem(identifier)
+    
+    SWS.Power:AllocatePower(identifier, 0)
+    table.remove(SWS.Power.systems, index)
+
+    net.Start("SWS.Power.UnregisterSystem")
+        net.WriteUInt(index, 8)
+    net.Broadcast()
 end
 
 local function swapSystems(index1, index2)
     local temp = table.Copy(SWS.Power.systems[index1])
     SWS.Power.systems[index1] = table.Copy(SWS.Power.systems[index2])
     SWS.Power.systems[index2] = table.Copy(temp)
+
+    net.Start("SWS.Power.SwapSystems")
+        net.WriteUInt(index1, 8)
+        net.WriteUInt(index2, 8)
+    net.Broadcast()
 end
 
 function SWS.Power:IncreaseSystemPriority(identifier)
@@ -126,6 +154,28 @@ function SWS.Power:DecreaseSystemPriority(identifier)
     swapSystems(index, index+1)
 end
 
+////////////////
+// Networking //
+////////////////
+
+util.AddNetworkString("SWS.Power.SyncData")
+util.AddNetworkString("SWS.Power.UpdateSystem")
+util.AddNetworkString("SWS.Power.UpdatePower")
+util.AddNetworkString("SWS.Power.SwapSystems")
+util.AddNetworkString("SWS.Power.RegisterSystem")
+util.AddNetworkString("SWS.Power.UnregisterSystem")
+
+hook.Add("SWS.PlayerLoaded", "SWS.Power.SyncData", function(ply)
+    net.Start("SWS.Power.SyncData")
+        net.WriteUInt(SWS.Power:GetTotalPower(), 8)
+        net.WriteUInt(SWS.Power:GetFreePower(), 8)
+
+        net.WriteString(util.TableToJSON(table.Copy(SWS.Power.powerProvider)))
+        net.WriteString(util.TableToJSON(table.Copy(SWS.Power.systems)))
+    net.Send(ply)
+end)
+
 SWS.Power:RegisterSystem("testSystem1", 10, function() end)
 SWS.Power:RegisterSystem("testSystem2", 10, function() end)
 SWS.Power:RegisterSystem("testSystem3", 10, function() end)
+--SWS.Power:UnregisterSystem("testSystem3")
