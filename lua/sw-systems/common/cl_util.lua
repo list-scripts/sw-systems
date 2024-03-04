@@ -52,6 +52,8 @@ end
 // Debug //
 ///////////
 
+-- thanks to Menschlich for this code
+
 local lastDraw = 0
 local UPDATE_TIME = 1
 
@@ -85,6 +87,8 @@ hook.Add("Think", "SWS.Reactor.Debug", function()
     i = 0
 
     addText("┌──── Realtime Stats ────┐")
+        addText("power", SWS.Power.freePower, SWS.Power.totalPower)
+        addText("\t---------------------------")
         addText("status", SWS.Reactor.status)
         addText("powerOutput", SWS.Reactor.powerOutput, SWS.Reactor.MAX_POWER_OUTPUT)
         addText("coolingPower", SWS.Reactor.coolingPower, SWS.Reactor.MAX_COOLING_POWER)
