@@ -23,6 +23,9 @@ if SERVER then
         self:SetMoveType(MOVETYPE_VPHYSICS)
         self:SetSolid(SOLID_VPHYSICS)
         self:SetRenderMode(RENDERMODE_TRANSCOLOR)
+        self:SetSubMaterial(1, "sw-systems/heat-screen")
+        self:SetSubMaterial(2, "sw-systems/coolant-screen")
+        self:SetSubMaterial(3, "sw-systems/power-screen")
     
         local phys = self:GetPhysicsObject()
     
@@ -34,16 +37,12 @@ end
 
 if CLIENT then
     local BACKGROUND_COLOR = Color(21, 28, 59)
-    local MAIN_COLOR = Color(202, 245, 255)
+    local MAIN_COLOR = Color(176, 238, 252)
     local GREEN_COLOR = Color(75, 247, 98)
+    local BLUE_COLOR = Color(104, 227, 255)
     local RED_COLOR = Color(255, 62, 36)
     local ORANGE_COLOR = Color(255, 167, 36)
     local GRAY_COLOR = Color(181, 188, 162)
-
-    local COOLANT_SCREEN = Material("sw-systems/reactor1.png")
-    local HEAT_SCREEN = Material("sw-systems/reactor2.png")
-    local POWER_SCREEN = Material("sw-systems/reactor3.png")
-    local MELTDOWN_SCREEN = Material("sw-systems/reactor4.png")
 
     local STATUS_NAMING = {}
     STATUS_NAMING[SWS.ENUM.REACTOR_STATUS.OPERATIONAL] = "OPERATIONAL"
@@ -51,84 +50,56 @@ if CLIENT then
 
 
     local function drawPowerScreen(ent, x, y)
-        -- draw background ---------------------------------------------------------
-        surface.SetMaterial(POWER_SCREEN)
-        if SWS.Reactor:GetStatus() == SWS.ENUM.REACTOR_STATUS.MELTDOWN then 
-            surface.SetMaterial(MELTDOWN_SCREEN)
-        end
-        surface.SetDrawColor(color_white)
-        surface.DrawTexturedRect(x, y, 1000, 800)
 
         -- draw text ---------------------------------------------------------------
-        draw.SpacedText("REACTOR STATUS", adraw.xFont("!Montserrat-Bold@70"), x-3, y+10, MAIN_COLOR, 20)
-        draw.SpacedText("REACTOR STATUS", adraw.xFont("!Aurebesh@25"), x, y+90, MAIN_COLOR, 20)
-
         if SWS.Reactor:GetStatus() == SWS.ENUM.REACTOR_STATUS.MELTDOWN then
-            draw.SimpleText(STATUS_NAMING[SWS.Reactor:GetStatus()], adraw.xFont("!Montserrat@80"), x+738, y+180, RED_COLOR, TEXT_ALIGN_RIGHT)
+            draw.SimpleText(STATUS_NAMING[SWS.Reactor:GetStatus()], adraw.xFont("!Montserrat@80"), x+738, y+175, RED_COLOR, TEXT_ALIGN_RIGHT)
         else
-            draw.SimpleText(STATUS_NAMING[SWS.Reactor:GetStatus()], adraw.xFont("!Montserrat@80"), x+738, y+180, MAIN_COLOR, TEXT_ALIGN_RIGHT)
+            draw.SimpleText(STATUS_NAMING[SWS.Reactor:GetStatus()], adraw.xFont("!Montserrat@80"), x+738, y+175, MAIN_COLOR, TEXT_ALIGN_RIGHT)
         end
-        
 
-        draw.SimpleText("FUEL USAGE", adraw.xFont("!Aurebesh@40"), x+1000, y+360, MAIN_COLOR, TEXT_ALIGN_RIGHT)
-        draw.SimpleText("COMING SOON", adraw.xFont("!Aurebesh@40"), x+1000, y+430, MAIN_COLOR, TEXT_ALIGN_RIGHT)
-
-        draw.SpacedText("POWER OUTPUT", adraw.xFont("!Aurebesh@15"), x, y+530, MAIN_COLOR, 15)
-        draw.SpacedText("POWER OUTPUT", adraw.xFont("!Montserrat-Bold@50"), x-3, y+550, MAIN_COLOR, 10)
+        draw.SimpleText(SWS.Reactor:GetPowerOutput(), adraw.xFont("!Montserrat-Bold@95"), x+738, y+600, MAIN_COLOR)
+        draw.SimpleText(SWS.Reactor:GetMaxPowerOutput(), adraw.xFont("!Montserrat-Bold@95"), x+738, y+680, MAIN_COLOR)
 
         -- draw bars ----------------------------------------------------------------
         surface.SetDrawColor(GREEN_COLOR)
         
-        local pos = x+15
+        local pos = x
         for i=1, SWS.Reactor:GetPowerOutput() do
-            surface.DrawRect(pos, y+616, 45, 137)
-            pos = pos + 71.8
+            surface.DrawRect(pos, y+622, 45, 137)
+            pos = pos + 73.8
         end
     end
 
     local function drawCoolantScreen(ent, x, y)
-        -- draw background ---------------------------------------------------------
-        surface.SetMaterial(COOLANT_SCREEN)
-        surface.SetDrawColor(color_white)
-        surface.DrawTexturedRect(x, y, 480, 380)
 
         -- draw text ---------------------------------------------------------------
-        draw.SpacedText("COOLANT STATUS", adraw.xFont("!Montserrat-Bold@30"), x-2, y+10, MAIN_COLOR, 10)
-        draw.SpacedText("COOLANT STATUS", adraw.xFont("!Aurebesh@10"), x, y+45, MAIN_COLOR, 10)
-
-        draw.SpacedText("COOLANT LEVEL", adraw.xFont("!Aurebesh@10"), x, y+225, MAIN_COLOR, 10)
-        draw.SpacedText("COOLANT LEVEL", adraw.xFont("!Montserrat-Bold@30"), x-2, y+240, MAIN_COLOR, 10)
+        draw.SimpleText(SWS.Reactor:GetCoolingPower(), adraw.xFont("!Montserrat-Bold@57"), x+414, y+255, MAIN_COLOR)
+        draw.SimpleText(SWS.Reactor:GetMaxCoolingPower(), adraw.xFont("!Montserrat-Bold@57"), x+414, y+305, MAIN_COLOR)
 
         -- draw bars ----------------------------------------------------------------
-        surface.SetDrawColor(MAIN_COLOR)
+        surface.SetDrawColor(BLUE_COLOR)
         
-        local pos = x+8
+        local pos = x+8.5
         for i=1, SWS.Reactor:GetCoolingPower() do
-            surface.DrawRect(pos, y+278, 24, 76)
-            pos = pos + 39.6
+            surface.DrawRect(pos, y+274, 24, 76)
+            pos = pos + 40
         end
     end
 
     local function drawHeatScreen(ent, x, y)
-        -- draw background ---------------------------------------------------------
-        surface.SetMaterial(HEAT_SCREEN)
-        surface.SetDrawColor(color_white)
-        surface.DrawTexturedRect(x, y, 480, 380)
 
         -- draw text ---------------------------------------------------------------
-        draw.SpacedText("HEAT STATUS", adraw.xFont("!Montserrat-Bold@30"), x-2, y+10, MAIN_COLOR, 10)
-        draw.SpacedText("HEAT STATUS", adraw.xFont("!Aurebesh@10"), x, y+45, MAIN_COLOR, 10)
-
-        draw.SpacedText("HEAT LEVEL", adraw.xFont("!Aurebesh@10"), x, y+225, MAIN_COLOR, 10)
-        draw.SpacedText("HEAT LEVEL", adraw.xFont("!Montserrat-Bold@30"), x-2, y+240, MAIN_COLOR, 10)
+        draw.SimpleText(SWS.Reactor:GetHeat(), adraw.xFont("!Montserrat-Bold@57"), x+414, y+255, MAIN_COLOR)
+        draw.SimpleText(SWS.Reactor:GetMaxHeat(), adraw.xFont("!Montserrat-Bold@57"), x+414, y+305, MAIN_COLOR)
 
         -- draw bars ----------------------------------------------------------------
         surface.SetDrawColor(RED_COLOR)
         
-        local pos = x+8
+        local pos = x+8.5
         for i=1, SWS.Reactor:GetHeat() do
-            surface.DrawRect(pos, y+278, 24, 76)
-            pos = pos + 39.6
+            surface.DrawRect(pos, y+274, 24, 76)
+            pos = pos + 40
         end
     end
 
@@ -139,20 +110,16 @@ if CLIENT then
     
         if adraw.Entity3D2D(self, Vector(2.15, 0, 45.7), Angle(0,90,61.5), 0.01) then
             -- power screen --------------------------------------------------------
-            draw.RoundedBox(160, 275, 0, 1200, 1050, BACKGROUND_COLOR)
-
             drawPowerScreen(self, 390, 125)
-            
+
             adraw.End3D2D()
         end
 
         if adraw.Entity3D2D(self, Vector(1.95, 0, 45.1), Angle(0,90,61.5), 0.01) then
             -- coolant screen -------------------------------------------------------
-            draw.RoundedBox(80, -1355, 0, 580, 480, BACKGROUND_COLOR)
             drawCoolantScreen(self, -1305, 50)
 
             -- heat screen -----------------------------------------------------------
-            draw.RoundedBox(80, -650, 0, 580, 480, BACKGROUND_COLOR)
             drawHeatScreen(self, -600, 50)
 
             adraw.End3D2D()
