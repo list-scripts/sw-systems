@@ -22,12 +22,24 @@ function SWS.Reactor:GetPowerOutput()
     return SWS.Reactor.powerOutput
 end
 
+function SWS.Reactor:GetMaxPowerOutput()
+    return SWS.Reactor.MAX_POWER_OUTPUT
+end
+
 function SWS.Reactor:GetCoolingPower()
     return SWS.Reactor.coolingPower
 end
 
+function SWS.Reactor:GetMaxCoolingPower()
+    return SWS.Reactor.MAX_COOLING_POWER
+end
+
 function SWS.Reactor:GetHeat()
     return SWS.Reactor.heat
+end
+
+function SWS.Reactor:GetMaxHeat()
+    return SWS.Reactor.MAX_HEAT
 end
 
 if SERVER then
