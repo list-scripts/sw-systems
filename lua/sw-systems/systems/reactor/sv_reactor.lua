@@ -58,22 +58,18 @@ util.AddNetworkString("SWS.Reactor.Cooling")
 util.AddNetworkString("SWS.Reactor.Heat")
 util.AddNetworkString("SWS.Reactor.SyncData")
 
-local function terminalInRange(ply, class)
-    for _, ent in ipairs(ents.FindByClass(class)) do
-        if ent:GetPos():DistToSqr(ply:GetPos()) <= SWS.ENTITY_RANGE then
-            return true
-        end
-    end
-end
-
 net.Receive("SWS.Reactor.Power", function(len, ply)
-    if SWS.IsAdmin(ply) or terminalInRange(ply, "sws_reactor_terminal") then
+    if not SWS.IsAdmin(ply) then return end
+    local trEnt = ply:GetEyeTraceNoCursor()
+    if trEnt and trEnt ~= NULL and trEnt:GetClass() == "sws_reactor_terminal" then
         SWS.Reactor:SetPowerOutput(net.ReadUInt(8))
     end
 end)
 
 net.Receive("SWS.Reactor.Cooling", function(len, ply)
-    if SWS.IsAdmin(ply) or terminalInRange(ply, "sws_reactor_terminal") then
+    if not SWS.IsAdmin(ply) then return end
+    local trEnt = ply:GetEyeTraceNoCursor()
+    if trEnt and trEnt ~= NULL and trEnt:GetClass() == "sws_reactor_terminal" then
         SWS.Reactor:SetCoolingPower(net.ReadUInt(8))
     end
 end)
