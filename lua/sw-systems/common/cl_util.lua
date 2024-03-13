@@ -37,13 +37,19 @@ hook.Add("HUDPaint", "Test", function()
 end)
 ]]
 
+local surface_SetFont = surface.SetFont
+local ipairs = ipairs
+local string_ToTable = string.ToTable
+local surface_GetTextSize = surface.GetTextSize
+local draw_SimpleText = draw.SimpleText
+
 function draw.SpacedText(text, font, x, y, color, spacing)
-    surface.SetFont(font)
+    surface_SetFont(font)
     local pos = 0
 
-    for k, char in ipairs(string.ToTable(text)) do
-        local w = surface.GetTextSize(char)
-        draw.SimpleText(char, font, x+pos, y, color)
+    for k, char in ipairs(string_ToTable(text)) do
+        local w = surface_GetTextSize(char)
+        draw_SimpleText(char, font, x+pos, y, color)
 
         pos = pos + w + spacing
     end
