@@ -40,9 +40,9 @@ function draw.SpacedText(text, font, x, y, color, spacing)
     surface.SetFont(font)
     local pos = 0
 
-    for k,v in ipairs(string.ToTable(text)) do
-        local w = surface.GetTextSize(v)
-        draw.SimpleText(v, font, x+pos, y, color)
+    for k, char in ipairs(string.ToTable(text)) do
+        local w = surface.GetTextSize(char)
+        draw.SimpleText(char, font, x+pos, y, color)
 
         pos = pos + w + spacing
     end

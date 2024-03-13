@@ -17,8 +17,8 @@ function SWS.Power:GetFreePower()
 end
 
 function SWS.Power:GetSystemIndexByName(name)
-    for i,v in ipairs(SWS.Power.systems) do
-        if v.name == name then
+    for i, sys in ipairs(SWS.Power.systems) do
+        if sys.name == name then
             return i
         end
     end

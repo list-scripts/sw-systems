@@ -85,8 +85,8 @@ function SWS.Power:RegisterPowerProvider(name, getPowerFunc)
 end
 
 function SWS.Power:UnregisterPowerProvider(name)
-    for i,v in ipairs(SWS.Power.powerProvider) do
-        if v.name == name then
+    for i,powerProvider in ipairs(SWS.Power.powerProvider) do
+        if powerProvider.name == name then
             table.remove(SWS.Power.powerProvider, i)
         end
     end
@@ -94,8 +94,8 @@ end
 
 timer.Create("SWS.Power.PollPower", SWS.Power.POLL_INTERVAL, 0, function()
     local availablePower = 0
-    for i,v in ipairs(SWS.Power.powerProvider) do
-        availablePower = availablePower + v:getPower()
+    for i, powerProvider in ipairs(SWS.Power.powerProvider) do
+        availablePower = availablePower + powerProvider:getPower()
     end
 
     if availablePower > SWS.Power:GetTotalPower() then

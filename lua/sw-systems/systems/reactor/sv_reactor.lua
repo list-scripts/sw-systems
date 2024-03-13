@@ -59,8 +59,8 @@ util.AddNetworkString("SWS.Reactor.Heat")
 util.AddNetworkString("SWS.Reactor.SyncData")
 
 local function terminalInRange(ply, class)
-    for _, v in ipairs(ents.FindByClass(class)) do
-        if v:GetPos():DistToSqr(ply:GetPos()) <= SWS.ENTITY_RANGE then
+    for _, ent in ipairs(ents.FindByClass(class)) do
+        if ent:GetPos():DistToSqr(ply:GetPos()) <= SWS.ENTITY_RANGE then
             return true
         end
     end
