@@ -27,9 +27,18 @@ function SWS.Power:AddPower(power)
 end
 
 function SWS.Power:RemovePower(power)
+    --remove allocated power from systems by priority first
     if SWS.Power.freePower < power then
-        local remainder = math.abs(SWS.Power.totalPower - power)
-        -- remove the power we give systems by priority and resync systems
+        local remainder = math.abs(SWS.Power.freePower - power)
+        for i = #SWS.Power.systems, 1, -1 do
+            local sys, index = SWS.Power:GetSystem(i)
+            if remainder <= 0 then break end
+            if sys.power > 0 then
+                local powerToRemove = sys.power > remainder and remainder or sys.power
+                SWS.Power:SetSystemPower(sys.name, sys.power - powerToRemove)
+                remainder = remainder - powerToRemove
+            end
+        end
     end
     
     SWS.Power:SetTotalPower(SWS.Power:GetTotalPower() - power)
@@ -42,7 +51,17 @@ function SWS.Power:RemovePower(power)
 end
 
 function SWS.Power:SetSystemPower(identifier, newValue)
-    SWS.Power:GetSystem(identifier).power = math.Clamp(newValue, 0, SWS.Power:GetSystemMaxPower(index))
+    local system, index = SWS.Power:GetSystem(identifier)
+    system.power = math.Clamp(newValue, 0, SWS.Power:GetSystemMaxPower(identifier))
+
+    -- inform the system that its power allocation has changed
+    local updateFunc = SWS.Power:GetSystemUpdateFunc(identifier)
+    updateFunc(SWS.Power:GetSystemPower(identifier))
+
+    net.Start("SWS.Power.UpdateSystem")
+        net.WriteUInt(index, 8)
+        net.WriteString(util.TableToJSON(table.Copy(system)))
+    net.Broadcast()
 end
 
 -- this sets the value, if possible. It does not just add.
@@ -65,15 +84,6 @@ function SWS.Power:AllocatePower(identifier, power)
         SWS.Power:SetSystemPower(identifier, SWS.Power:GetSystemPower(identifier) - powerDiff)
         SWS.Power:SetFreePower(SWS.Power:GetFreePower() + powerDiff)
     end
-
-    -- inform the system that its power allocation has changed
-    local updateFunc = SWS.Power:GetSystemUpdateFunc(identifier)
-    updateFunc(SWS.Power:GetSystemPower(identifier))
-
-    net.Start("SWS.Power.UpdateSystem")
-        net.WriteUInt(index, 8)
-        net.WriteString(util.TableToJSON(table.Copy(system)))
-    net.Broadcast()
 end
 
 ///////////////////////////////
