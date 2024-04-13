@@ -23,9 +23,10 @@ if SERVER then
         self:SetMoveType(MOVETYPE_VPHYSICS)
         self:SetSolid(SOLID_VPHYSICS)
         self:SetRenderMode(RENDERMODE_TRANSCOLOR)
-        self:SetSubMaterial(1, "sw-systems/heat-screen")
-        self:SetSubMaterial(2, "sw-systems/coolant-screen")
-        self:SetSubMaterial(3, "sw-systems/power-screen")
+        self:SetSubMaterial(0, "sw-systems/reactor terminal/imp_console_reactor_edit")
+        self:SetSubMaterial(1, "sw-systems/reactor terminal/heat-screen")
+        self:SetSubMaterial(2, "sw-systems/reactor terminal/coolant-screen")
+        self:SetSubMaterial(3, "sw-systems/reactor terminal/power-screen")
     
         local phys = self:GetPhysicsObject()
     
@@ -128,8 +129,6 @@ if CLIENT then
         if adraw.Entity3D2D(self, Vector(11.5, -13.8, 33.3), Angle(0, 90, 15), 0.01) then
             --draw.RoundedBox(0, 0, 0, 2600, 800, BACKGROUND_COLOR)
 
-            draw.SpacedText("COOLANT CONTROL", adraw.xFont("!Montserrat-Bold@120"), 0-60, 0-320, GRAY_COLOR, 15)
-
             if adraw.xTextButton("+", adraw.xFont("!Montserrat-Bold@100"), 160, 0-10, 120, 120, 10, MAIN_COLOR, ORANGE_COLOR, MAIN_COLOR) then
                 SWS.Reactor:SetCoolingPower(SWS.Reactor:GetCoolingPower()+1)
             end
@@ -137,8 +136,6 @@ if CLIENT then
             if adraw.xTextButton("-", adraw.xFont("!Montserrat-Bold@100"), 160, 120, 120, 120, 10, MAIN_COLOR, ORANGE_COLOR, MAIN_COLOR) then
                 SWS.Reactor:SetCoolingPower(SWS.Reactor:GetCoolingPower()-1)
             end
-
-            draw.SpacedText("POWER CONTROL", adraw.xFont("!Montserrat-Bold@120"), 1600, 0-320, GRAY_COLOR, 15)
 
             if adraw.xTextButton("+", adraw.xFont("!Montserrat-Bold@100"), 1675, 0, 120, 120, 10, MAIN_COLOR, ORANGE_COLOR, MAIN_COLOR) then
                 SWS.Reactor:SetPowerOutput(SWS.Reactor:GetPowerOutput()+1)

@@ -1,6 +1,6 @@
 "UnLitGeneric"
 {
-	"$basetexture"			"sw-systems/coolant-screen"
+	"$basetexture"			"sw-systems/reactor terminal/coolant-screen"
 	"$surfaceprop"			"glass"
    	"$selfillum"			"1"
 	"$model"			"1"

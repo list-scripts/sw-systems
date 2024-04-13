@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "dolunity/swo/terminal/terminal_Base_color"
+	"$selfillum" "1"	
+	"$selfillummask" "dolunity/swo/terminal/terminal_Base_color"
+}

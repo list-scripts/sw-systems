@@ -1,0 +1,14 @@
+"VertexlitGeneric"
+{
+	"$phong"	1
+	"$basetexture" "dolunity/swo/terminal/terminal_Base_color"
+	"$bumpmap" "dolunity/swo/terminal/terminal_Normal_DirectX"
+	"$phongexponenttexture" "dolunity/swo/terminal/terminal_Metallic"
+	"$nodecal" 1
+
+	"$phongboost"	6
+	"$phongfresnelranges"	"[0.01 0.01 0.01]"
+	"$rimlight"               1
+	"$rimlightexponent"       2
+	"$rimlightboost"          .2
+}
