@@ -43,6 +43,7 @@ end
 
 IncludeDir(rootDirectory .. "/config")
 IncludeDir(rootDirectory .. "/lang")
-IncludeDir(rootDirectory .. "/common")
+IncludeDir(rootDirectory .. "/lib")
+IncludeDir(rootDirectory .. "/core")
 IncludeDir(rootDirectory .. "/power_manager")
 IncludeDir(rootDirectory .. "/systems")

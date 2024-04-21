@@ -95,8 +95,8 @@ hook.Add("Think", "SWS.Reactor.Debug", function()
 
     addText("┌──── Realtime Stats ────┐")
         addText("power", SWS.Power.freePower, SWS.Power.totalPower)
-        for i, system in ipairs(SWS.Power.systems) do
-            addText(system.name, system.power, system.maxPower)
+        for i, system in ipairs(SWS.Power.activeSystems) do
+            addText(system.name, system.currentPower, system.maxPower)
         end
         addText("\t---------------------------")
         addText("status", SWS.Reactor.status)

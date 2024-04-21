@@ -30,12 +30,12 @@ function SWS.Power:RemovePower(power)
     --remove allocated power from systems by priority first
     if SWS.Power.freePower < power then
         local remainder = math.abs(SWS.Power.freePower - power)
-        for i = #SWS.Power.systems, 1, -1 do
-            local sys, index = SWS.Power:GetSystem(i)
+        for i = #SWS.Power.activeSystems, 1, -1 do
+            local system, index = SWS.Power:GetSystem(i)
             if remainder <= 0 then break end
-            if sys.power > 0 then
-                local powerToRemove = sys.power > remainder and remainder or sys.power
-                SWS.Power:SetSystemPower(sys.name, sys.power - powerToRemove)
+            if system.currentPower > 0 then
+                local powerToRemove = system.currentPower > remainder and remainder or system.currentPower
+                SWS.Power:SetSystemPower(system.name, system.currentPower - powerToRemove)
                 remainder = remainder - powerToRemove
             end
         end
@@ -52,7 +52,7 @@ end
 
 function SWS.Power:SetSystemPower(identifier, newValue)
     local system, index = SWS.Power:GetSystem(identifier)
-    system.power = math.Clamp(newValue, 0, SWS.Power:GetSystemMaxPower(identifier))
+    system.currentPower = math.Clamp(newValue, 0, SWS.Power:GetSystemMaxPower(identifier))
 
     -- inform the system that its power allocation has changed
     local updateFunc = SWS.Power:GetSystemUpdateFunc(identifier)
@@ -68,11 +68,11 @@ end
 -- prolly way to complicated... can't think of a better way right now tho :/
 function SWS.Power:AllocatePower(identifier, power)
     local system, index = SWS.Power:GetSystem(identifier)
-    if system.power == power then return end
+    if system.currentPower == power then return end
 
     power = math.Clamp(power, 0, system.maxPower)
-    local adding = system.power < power and true or false
-    local powerDiff = math.abs(system.power - power)
+    local adding = system.currentPower < power and true or false
+    local powerDiff = math.abs(system.currentPower - power)
 
     if adding then
         if SWS.Power:GetFreePower() <= 0 then return end
@@ -120,8 +120,8 @@ end)
 ///////////////////////
 
 function SWS.Power:RegisterSystem(name, maxPower, update)
-    local system = {name = name, power = 0, maxPower = maxPower, update = update}
-    table.insert(SWS.Power.systems, system)
+    local system = {name = name, currentPower = 0, maxPower = maxPower, update = update}
+    table.insert(SWS.Power.activeSystems, system)
 
     net.Start("SWS.Power.RegisterSystem")
         net.WriteString(util.TableToJSON(table.Copy(system)))
@@ -132,7 +132,7 @@ function SWS.Power:UnregisterSystem(identifier)
     local _, index = SWS.Power:GetSystem(identifier)
     
     SWS.Power:AllocatePower(identifier, 0)
-    table.remove(SWS.Power.systems, index)
+    table.remove(SWS.Power.activeSystems, index)
 
     net.Start("SWS.Power.UnregisterSystem")
         net.WriteUInt(index, 8)
@@ -140,9 +140,9 @@ function SWS.Power:UnregisterSystem(identifier)
 end
 
 local function swapSystems(index1, index2)
-    local temp = table.Copy(SWS.Power.systems[index1])
-    SWS.Power.systems[index1] = table.Copy(SWS.Power.systems[index2])
-    SWS.Power.systems[index2] = table.Copy(temp)
+    local temp = table.Copy(SWS.Power.activeSystems[index1])
+    SWS.Power.activeSystems[index1] = table.Copy(SWS.Power.activeSystems[index2])
+    SWS.Power.activeSystems[index2] = table.Copy(temp)
 
     net.Start("SWS.Power.SwapSystems")
         net.WriteUInt(index1, 8)
@@ -159,7 +159,7 @@ end
 
 function SWS.Power:DecreaseSystemPriority(identifier)
     local _, index = SWS.Power:GetSystem(identifier)
-    if index >= #SWS.Power.systems then return end
+    if index >= #SWS.Power.activeSystems then return end
 
     swapSystems(index, index+1)
 end
@@ -181,11 +181,6 @@ hook.Add("SWS.PlayerLoaded", "SWS.Power.SyncData", function(ply)
         net.WriteUInt(SWS.Power:GetFreePower(), 8)
 
         net.WriteString(util.TableToJSON(table.Copy(SWS.Power.powerProvider)))
-        net.WriteString(util.TableToJSON(table.Copy(SWS.Power.systems)))
+        net.WriteString(util.TableToJSON(table.Copy(SWS.Power.activeSystems)))
     net.Send(ply)
 end)
-
-SWS.Power:RegisterSystem("testSystem1", 10, function() end)
-SWS.Power:RegisterSystem("testSystem2", 10, function() end)
-SWS.Power:RegisterSystem("testSystem3", 10, function() end)
---SWS.Power:UnregisterSystem("testSystem3")
