@@ -59,8 +59,8 @@ if CLIENT then
             draw.SimpleText(STATUS_NAMING[SWS.Reactor:GetStatus()], adraw.xFont("!Montserrat@80"), x+738, y+175, MAIN_COLOR, TEXT_ALIGN_RIGHT)
         end
 
-        draw.SimpleText(SWS.Reactor:GetPowerOutput(), adraw.xFont("!Montserrat-Bold@95"), x+738, y+600, MAIN_COLOR)
-        draw.SimpleText(SWS.Reactor:GetMaxPowerOutput(), adraw.xFont("!Montserrat-Bold@95"), x+738, y+680, MAIN_COLOR)
+        draw.SimpleText(SWS.Reactor:GetPowerOutput(), adraw.xFont("!Montserrat Bold@95"), x+738, y+600, MAIN_COLOR)
+        draw.SimpleText(SWS.Reactor:GetMaxPowerOutput(), adraw.xFont("!Montserrat Bold@95"), x+738, y+680, MAIN_COLOR)
 
         -- draw bars ----------------------------------------------------------------
         surface.SetDrawColor(GREEN_COLOR)
@@ -75,8 +75,8 @@ if CLIENT then
     local function drawCoolantScreen(ent, x, y)
 
         -- draw text ---------------------------------------------------------------
-        draw.SimpleText(SWS.Reactor:GetCoolingPower(), adraw.xFont("!Montserrat-Bold@57"), x+414, y+255, MAIN_COLOR)
-        draw.SimpleText(SWS.Reactor:GetMaxCoolingPower(), adraw.xFont("!Montserrat-Bold@57"), x+414, y+305, MAIN_COLOR)
+        draw.SimpleText(SWS.Reactor:GetCoolingPower(), adraw.xFont("!Montserrat Bold@57"), x+414, y+255, MAIN_COLOR)
+        draw.SimpleText(SWS.Reactor:GetMaxCoolingPower(), adraw.xFont("!Montserrat Bold@57"), x+414, y+305, MAIN_COLOR)
 
         -- draw bars ----------------------------------------------------------------
         surface.SetDrawColor(BLUE_COLOR)
@@ -91,8 +91,8 @@ if CLIENT then
     local function drawHeatScreen(ent, x, y)
 
         -- draw text ---------------------------------------------------------------
-        draw.SimpleText(SWS.Reactor:GetHeat(), adraw.xFont("!Montserrat-Bold@57"), x+414, y+255, MAIN_COLOR)
-        draw.SimpleText(SWS.Reactor:GetMaxHeat(), adraw.xFont("!Montserrat-Bold@57"), x+414, y+305, MAIN_COLOR)
+        draw.SimpleText(SWS.Reactor:GetHeat(), adraw.xFont("!Montserrat Bold@57"), x+414, y+255, MAIN_COLOR)
+        draw.SimpleText(SWS.Reactor:GetMaxHeat(), adraw.xFont("!Montserrat Bold@57"), x+414, y+305, MAIN_COLOR)
 
         -- draw bars ----------------------------------------------------------------
         surface.SetDrawColor(RED_COLOR)
@@ -129,23 +129,23 @@ if CLIENT then
         if adraw.Entity3D2D(self, Vector(11.5, -13.8, 33.3), Angle(0, 90, 15), 0.01) then
             --draw.RoundedBox(0, 0, 0, 2600, 800, BACKGROUND_COLOR)
 
-            if adraw.xTextButton("+", adraw.xFont("!Montserrat-Bold@100"), 160, 0-10, 120, 120, 10, MAIN_COLOR, ORANGE_COLOR, MAIN_COLOR) then
+            if adraw.xTextButton("+", adraw.xFont("!Montserrat Bold@100"), 160, 0-10, 120, 120, 10, MAIN_COLOR, ORANGE_COLOR, MAIN_COLOR) then
                 SWS.Reactor:SetCoolingPower(SWS.Reactor:GetCoolingPower()+1)
             end
 
-            if adraw.xTextButton("-", adraw.xFont("!Montserrat-Bold@100"), 160, 120, 120, 120, 10, MAIN_COLOR, ORANGE_COLOR, MAIN_COLOR) then
+            if adraw.xTextButton("-", adraw.xFont("!Montserrat Bold@100"), 160, 120, 120, 120, 10, MAIN_COLOR, ORANGE_COLOR, MAIN_COLOR) then
                 SWS.Reactor:SetCoolingPower(SWS.Reactor:GetCoolingPower()-1)
             end
 
-            if adraw.xTextButton("+", adraw.xFont("!Montserrat-Bold@100"), 1675, 0, 120, 120, 10, MAIN_COLOR, ORANGE_COLOR, MAIN_COLOR) then
+            if adraw.xTextButton("+", adraw.xFont("!Montserrat Bold@100"), 1675, 0, 120, 120, 10, MAIN_COLOR, ORANGE_COLOR, MAIN_COLOR) then
                 SWS.Reactor:SetPowerOutput(SWS.Reactor:GetPowerOutput()+1)
             end
 
-            if adraw.xTextButton("-", adraw.xFont("!Montserrat-Bold@100"), 1675, 140, 120, 120, 10, MAIN_COLOR, ORANGE_COLOR, MAIN_COLOR) then
+            if adraw.xTextButton("-", adraw.xFont("!Montserrat Bold@100"), 1675, 140, 120, 120, 10, MAIN_COLOR, ORANGE_COLOR, MAIN_COLOR) then
                 SWS.Reactor:SetPowerOutput(SWS.Reactor:GetPowerOutput()-1)
             end
 
-            if adraw.xTextButton("SHUTDOWN", adraw.xFont("!Montserrat-Bold@90"), 1435, 610, 520, 220, 10, ORANGE_COLOR, RED_COLOR, ORANGE_COLOR) then
+            if adraw.xTextButton("SHUTDOWN", adraw.xFont("!Montserrat Bold@90"), 1435, 610, 520, 220, 10, ORANGE_COLOR, RED_COLOR, ORANGE_COLOR) then
                 SWS.Reactor:SetPowerOutput(0)
             end
 

@@ -41,9 +41,12 @@ local function IncludeDir( directory )
 	end
 end
 
+function SWS.includeDir( directory )
+	IncludeDir(rootDirectory.."/"..directory)
+end
+
 IncludeDir(rootDirectory .. "/config")
 IncludeDir(rootDirectory .. "/lang")
 IncludeDir(rootDirectory .. "/lib")
 IncludeDir(rootDirectory .. "/core")
-IncludeDir(rootDirectory .. "/power_manager")
-IncludeDir(rootDirectory .. "/systems")
+IncludeDir(rootDirectory .. "/power")

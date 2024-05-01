@@ -4,12 +4,7 @@ SWS.ENUM = SWS.ENUM or {}
 SYSTEM = {}
 SYSTEM.IDENTIFIER = "Engines"
 
-function SYSTEM:Initialize()
-
-end
-
-function SYSTEM:HandlePowerChange(newpower)
-    
-end
+SYSTEM.NAME = "Engines"
+SYSTEM.MAX_POWER = 10
 
 SWS.LoadSystem(SYSTEM)
