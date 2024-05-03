@@ -34,7 +34,7 @@ function GENERATOR:Initialize()
     self:SetCoolingPower(10)
     self:SetPowerOutput(10)
 
-    SWS.Power:RegisterPowerProvider("reactor", self)
+    SWS.Power:RegisterGenerator(self)
 end
 
 function GENERATOR:SetStatus(status)

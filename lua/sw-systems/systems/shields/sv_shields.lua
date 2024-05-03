@@ -4,7 +4,7 @@ local SYSTEM = {}
 SYSTEM.IDENTIFIER = "Shields"
 
 function SYSTEM:Initialize()
-    SWS.Power:RegisterSystem(self.IDENTIFIER, self.MAX_POWER, self)
+    SWS.Power:RegisterSystem(self)
 end
 
 function SYSTEM:HandlePowerChange(newPower)

@@ -3,6 +3,7 @@ SWS.Generators = SWS.Generators or {}
 SWS.Generators.Reactor = SWS.Generators.Reactor or {}
 
 -- maybe use this later, dunno
+-- precaching as a material would be a good idea
 --[[
 local function drawVerticalStripedRect(x, y, w, h, color1, color2, thickness)
     surface.SetDrawColor(color1)
@@ -31,30 +32,7 @@ local function drawHorizontalStripedRect(x, y, w, h, color1, color2, thickness)
 
     surface.DrawRect(x + w - remainder, y, remainder, h)
 end
-
-hook.Add("HUDPaint", "Test", function()
-    drawVerticalStripedRect(100, 100, 60, 200, Color(255, 255, 255), Color(0, 0, 0), 4)
-    drawHorizontalStripedRect(200, 100, 200, 60, Color(255, 255, 255), Color(0, 0, 0), 4)
-end)
 ]]
-
-local surface_SetFont = surface.SetFont
-local ipairs = ipairs
-local string_ToTable = string.ToTable
-local surface_GetTextSize = surface.GetTextSize
-local draw_SimpleText = draw.SimpleText
-
-function draw.SpacedText(text, font, x, y, color, spacing)
-    surface_SetFont(font)
-    local pos = 0
-
-    for k, char in ipairs(string_ToTable(text)) do
-        local w = surface_GetTextSize(char)
-        draw_SimpleText(char, font, x+pos, y, color)
-
-        pos = pos + w + spacing
-    end
-end
 
 ///////////
 // Debug //
@@ -97,7 +75,7 @@ hook.Add("Think", "SWS.Reactor.Debug", function()
     addText("┌──── Realtime Stats ────┐")
         addText("power", SWS.Power.freePower, SWS.Power.totalPower)
         for i, system in ipairs(SWS.Power.activeSystems) do
-            addText(system.name, system.currentPower, system.maxPower)
+            addText(system.NAME, system.power, system.MAX_POWER)
         end
         addText("\t---------------------------")
         addText("status", SWS.Generators.Reactor.status)

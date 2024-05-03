@@ -32,9 +32,9 @@ function SWS.Power:RemovePower(power)
         for i = #SWS.Power.activeSystems, 1, -1 do
             local system, index = SWS.Power:GetSystem(i)
             if remainder <= 0 then break end
-            if system.currentPower > 0 then
-                local powerToRemove = system.currentPower > remainder and remainder or system.currentPower
-                SWS.Power:SetSystemPower(system.name, system.currentPower - powerToRemove)
+            if SWS.Power:GetSystemPower(index) > 0 then
+                local powerToRemove = SWS.Power:GetSystemPower(index) > remainder and remainder or SWS.Power:GetSystemPower(index)
+                SWS.Power:SetSystemPower(system.name, SWS.Power:GetSystemPower(index) - powerToRemove)
                 remainder = remainder - powerToRemove
             end
         end
@@ -53,13 +53,13 @@ end
 -- its only for internal use
 function SWS.Power:SetSystemPower(identifier, newValue)
     local system, index = SWS.Power:GetSystem(identifier)
-    system.currentPower = math.Clamp(newValue, 0, SWS.Power:GetSystemMaxPower(identifier))
+    system.power = math.Clamp(newValue, 0, SWS.Power:GetSystemMaxPower(identifier))
 
-    system.reference:HandlePowerChange(SWS.Power:GetSystemPower(identifier))
+    system:HandlePowerChange(SWS.Power:GetSystemPower(identifier))
 
     net.Start("SWS.Power.UpdateSystem")
         net.WriteUInt(index, 8)
-        net.WriteString(util.TableToJSON(table.Copy(system)))
+        net.WriteUInt(system.power, 8)
     net.Broadcast()
 end
 
@@ -67,11 +67,11 @@ end
 -- prolly way to complicated... can't think of a better way right now tho :/
 function SWS.Power:AllocatePower(identifier, power)
     local system, index = SWS.Power:GetSystem(identifier)
-    if system.currentPower == power then return end
+    if system.power == power then return end
 
-    power = math.Clamp(power, 0, system.maxPower)
-    local adding = system.currentPower < power and true or false
-    local powerDiff = math.abs(system.currentPower - power)
+    power = math.Clamp(power, 0, system.MAX_POWER)
+    local adding = system.power < power and true or false
+    local powerDiff = math.abs(system.power - power)
 
     if adding then
         if SWS.Power:GetFreePower() <= 0 then return end
@@ -85,26 +85,26 @@ function SWS.Power:AllocatePower(identifier, power)
     end
 end
 
-///////////////////////////////
-// Power Provider Management //
-///////////////////////////////
+//////////////////////////
+// Generator Management //
+//////////////////////////
 
-function SWS.Power:RegisterPowerProvider(name, reference)
-    table.insert(SWS.Power.powerProvider, {name = name, reference = reference})
+function SWS.Power:RegisterGenerator(generator)
+    table.insert(SWS.Power.activeGenerators, generator)
 end
 
-function SWS.Power:UnregisterPowerProvider(name)
-    for i,powerProvider in ipairs(SWS.Power.powerProvider) do
-        if powerProvider.name == name then
-            table.remove(SWS.Power.powerProvider, i)
+function SWS.Power:UnregisterGenerator(identifier)
+    for i, generator in ipairs(SWS.Power.activeGenerators) do
+        if generator.IDENTIFIER == identifier then
+            table.remove(SWS.Power.activeGenerators, i)
         end
     end
 end
 
 timer.Create("SWS.Power.PollPower", SWS.Power.POLL_INTERVAL, 0, function()
     local availablePower = 0
-    for i, powerProvider in ipairs(SWS.Power.powerProvider) do
-        availablePower = availablePower + powerProvider.reference:GetPowerOutput()
+    for i, generator in ipairs(SWS.Power.activeGenerators) do
+        availablePower = availablePower + generator:GetPowerOutput()
     end
 
     if availablePower > SWS.Power:GetTotalPower() then
@@ -118,12 +118,12 @@ end)
 // System Management //
 ///////////////////////
 
-function SWS.Power:RegisterSystem(name, maxPower, reference)
-    local system = {name = name, currentPower = 0, maxPower = maxPower, reference = reference}
+function SWS.Power:RegisterSystem(system)
+    --local system = {name = name, currentPower = 0, maxPower = maxPower, reference = reference}
     table.insert(SWS.Power.activeSystems, system)
 
     net.Start("SWS.Power.RegisterSystem")
-        net.WriteString(util.TableToJSON(table.Copy(system)))
+        net.WriteString(system.IDENTIFIER)
     net.Broadcast()
 end
 
@@ -179,7 +179,7 @@ hook.Add("SWS.PlayerLoaded", "SWS.Power.SyncData", function(ply)
         net.WriteUInt(SWS.Power:GetTotalPower(), 8)
         net.WriteUInt(SWS.Power:GetFreePower(), 8)
 
-        net.WriteString(util.TableToJSON(table.Copy(SWS.Power.powerProvider)))
+        net.WriteString(util.TableToJSON(table.Copy(SWS.Power.activeGenerators)))
         net.WriteString(util.TableToJSON(table.Copy(SWS.Power.activeSystems)))
     net.Send(ply)
 end)

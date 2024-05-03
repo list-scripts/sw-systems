@@ -5,14 +5,14 @@ net.Receive("SWS.Power.SyncData", function(len, ply)
     SWS.Power.totalPower = net.ReadUInt(8)
     SWS.Power.freePower = net.ReadUInt(8)
 
-    SWS.Power.powerProvider = util.JSONToTable(net.ReadString())
+    SWS.Power.activeGenerators = util.JSONToTable(net.ReadString())
     SWS.Power.activeSystems = util.JSONToTable(net.ReadString())
 end)
 
 net.Receive("SWS.Power.UpdateSystem", function(len, ply)
     local index = net.ReadUInt(8)
-    local system = util.JSONToTable(net.ReadString())
-    SWS.Power.activeSystems[index] = table.Copy(system)
+    local newPower = net.ReadUInt(8)
+    SWS.Power.activeSystems[index].power = newPower
 end)
 
 net.Receive("SWS.Power.UpdatePower", function(len, ply)
@@ -30,8 +30,8 @@ net.Receive("SWS.Power.SwapSystems", function(len, ply)
 end)
 
 net.Receive("SWS.Power.RegisterSystem", function(len, ply)
-    local system = util.JSONToTable(net.ReadString())
-    table.insert(SWS.Power.activeSystems, table.Copy(system))
+    local identifier = net.ReadString()
+    table.insert(SWS.Power.activeSystems, SWS.Systems[identifier])
 end)
 
 net.Receive("SWS.Power.UnregisterSystem", function(len, ply)

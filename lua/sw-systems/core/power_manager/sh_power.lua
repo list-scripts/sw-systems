@@ -4,7 +4,7 @@ SWS.Power = SWS.Power or {}
 SWS.Power.totalPower = 0
 SWS.Power.freePower = 0
 
-SWS.Power.powerProvider = {}
+SWS.Power.activeGenerators = {}
 SWS.Power.activeSystems = {}
 
 function SWS.Power:GetTotalPower()
@@ -17,7 +17,7 @@ end
 
 function SWS.Power:GetSystemIndexByName(name)
     for i, sys in ipairs(SWS.Power.activeSystems) do
-        if sys.name == name then
+        if sys.NAME == name then
             return i
         end
     end
@@ -35,9 +35,9 @@ function SWS.Power:GetSystem(identifier)
 end
 
 function SWS.Power:GetSystemMaxPower(identifier)
-    return SWS.Power:GetSystem(identifier).maxPower
+    return SWS.Power:GetSystem(identifier).MAX_POWER
 end
 
 function SWS.Power:GetSystemPower(identifier)
-    return SWS.Power:GetSystem(identifier).currentPower
+    return SWS.Power:GetSystem(identifier).power
 end
