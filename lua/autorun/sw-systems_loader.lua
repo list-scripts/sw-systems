@@ -25,33 +25,15 @@ local function AddFile( File, directory )
 	end
 end
 
-local function IncludeDir( directory )
+function SWS.includeDir( directory, ignoredDirectories )
 	directory = directory .. "/"
 
-	local files, directories = file.Find( directory .. "*", "LUA" )
-
-	for _, v in ipairs( files ) do
-		if string.EndsWith( v, ".lua" ) then
-			AddFile( v, directory )
-		end
-	end
-
-	for _, v in ipairs( directories ) do
-		IncludeDir( directory .. v )
-	end
-end
-
-local ignoredDirectories = {
-	["entities"] = true,
-}
-
-function SWS.includeDir( directory, shouldIgnore )
-	directory = directory .. "/"
+	ignoredDirectories = ignoredDirectories or {}
 
 	local tempDirectories = string.Explode( "/", directory )
 	local lastDirectory = tempDirectories[#tempDirectories - 1]
 
-	if shouldIgnore and ignoredDirectories[lastDirectory] then return end
+	if ignoredDirectories[lastDirectory] then return end
 
 	local files, directories = file.Find( directory .. "*", "LUA" )
 
@@ -62,12 +44,12 @@ function SWS.includeDir( directory, shouldIgnore )
 	end
 
 	for _, v in ipairs( directories ) do
-		SWS.includeDir( directory .. v, shouldIgnore)
+		SWS.includeDir( directory .. v, ignoredDirectories)
 	end
 end
 
-IncludeDir(rootDirectory .. "/config")
-IncludeDir(rootDirectory .. "/lang")
-IncludeDir(rootDirectory .. "/lib")
-IncludeDir(rootDirectory .. "/core")
-IncludeDir(rootDirectory .. "/loader")
+SWS.includeDir(rootDirectory .. "/config")
+SWS.includeDir(rootDirectory .. "/lang")
+SWS.includeDir(rootDirectory .. "/lib")
+SWS.includeDir(rootDirectory .. "/core", {loader = true})
+SWS.includeDir(rootDirectory .. "/core/loader")
