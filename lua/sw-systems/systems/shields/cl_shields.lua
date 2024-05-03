@@ -1,9 +1,9 @@
 SWS = SWS or {}
 
 local SYSTEM = {}
-SYSTEM.IDENTIFIER = "Engines"
+SYSTEM.IDENTIFIER = "Shields"
 
-SYSTEM.ICON = Material("sw-systems/icons/engines.png")
+SYSTEM.ICON = Material("sw-systems/icons/shields.png")
 
 function SYSTEM:Initialize()
 

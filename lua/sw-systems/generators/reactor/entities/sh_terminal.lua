@@ -1,6 +1,4 @@
 SWS = SWS or {}
-SWS.ENUM = SWS.ENUM or {}
-SWS.Reactor = SWS.Reactor or {}
 
 local adraw = adraw
 
@@ -11,14 +9,12 @@ ENT.ClassName = name
 
 ENT.PrintName = "Reactor Terminal"
 ENT.Author = "senfauge & Luiggi33"
-ENT.Category = SWS.ENTITY_CATEGORY.."Reactor"
+ENT.Category = SWS.CATEGORY_PREFIX.."Reactor"
 ENT.Spawnable = true
-
-ENT.ModelPath = "models/lordtrilobite/starwars/isd/imp_console_medium03.mdl"
 
 if SERVER then 
     function ENT:Initialize()
-        self:SetModel(self.ModelPath)
+        self:SetModel("models/lordtrilobite/starwars/isd/imp_console_medium03.mdl")
         self:PhysicsInit(SOLID_VPHYSICS)
         self:SetMoveType(MOVETYPE_VPHYSICS)
         self:SetSolid(SOLID_VPHYSICS)
@@ -46,27 +42,27 @@ if CLIENT then
     local GRAY_COLOR = Color(181, 188, 162)
 
     local STATUS_NAMING = {}
-    STATUS_NAMING[SWS.ENUM.REACTOR_STATUS.OPERATIONAL] = "OPERATIONAL"
-    STATUS_NAMING[SWS.ENUM.REACTOR_STATUS.MELTDOWN] = "MELTDOWN"
+    STATUS_NAMING[SWS.Generators.Reactor.REACTOR_STATUS.OPERATIONAL] = "OPERATIONAL"
+    STATUS_NAMING[SWS.Generators.Reactor.REACTOR_STATUS.MELTDOWN] = "MELTDOWN"
 
 
     local function drawPowerScreen(ent, x, y)
 
         -- draw text ---------------------------------------------------------------
-        if SWS.Reactor:GetStatus() == SWS.ENUM.REACTOR_STATUS.MELTDOWN then
-            draw.SimpleText(STATUS_NAMING[SWS.Reactor:GetStatus()], adraw.xFont("!Montserrat@80"), x+738, y+175, RED_COLOR, TEXT_ALIGN_RIGHT)
+        if SWS.Generators.Reactor:GetStatus() == SWS.Generators.Reactor.REACTOR_STATUS.MELTDOWN then
+            draw.SimpleText(STATUS_NAMING[SWS.Generators.Reactor:GetStatus()], adraw.xFont("!Montserrat@80"), x+738, y+175, RED_COLOR, TEXT_ALIGN_RIGHT)
         else
-            draw.SimpleText(STATUS_NAMING[SWS.Reactor:GetStatus()], adraw.xFont("!Montserrat@80"), x+738, y+175, MAIN_COLOR, TEXT_ALIGN_RIGHT)
+            draw.SimpleText(STATUS_NAMING[SWS.Generators.Reactor:GetStatus()], adraw.xFont("!Montserrat@80"), x+738, y+175, MAIN_COLOR, TEXT_ALIGN_RIGHT)
         end
 
-        draw.SimpleText(SWS.Reactor:GetPowerOutput(), adraw.xFont("!Montserrat Bold@95"), x+738, y+600, MAIN_COLOR)
-        draw.SimpleText(SWS.Reactor:GetMaxPowerOutput(), adraw.xFont("!Montserrat Bold@95"), x+738, y+680, MAIN_COLOR)
+        draw.SimpleText(SWS.Generators.Reactor:GetPowerOutput(), adraw.xFont("!Montserrat Bold@95"), x+738, y+600, MAIN_COLOR)
+        draw.SimpleText(SWS.Generators.Reactor:GetMaxPowerOutput(), adraw.xFont("!Montserrat Bold@95"), x+738, y+680, MAIN_COLOR)
 
         -- draw bars ----------------------------------------------------------------
         surface.SetDrawColor(GREEN_COLOR)
         
         local pos = x
-        for i=1, SWS.Reactor:GetPowerOutput() do
+        for i=1, SWS.Generators.Reactor:GetPowerOutput() do
             surface.DrawRect(pos, y+622, 45, 137)
             pos = pos + 73.8
         end
@@ -75,14 +71,14 @@ if CLIENT then
     local function drawCoolantScreen(ent, x, y)
 
         -- draw text ---------------------------------------------------------------
-        draw.SimpleText(SWS.Reactor:GetCoolingPower(), adraw.xFont("!Montserrat Bold@57"), x+414, y+255, MAIN_COLOR)
-        draw.SimpleText(SWS.Reactor:GetMaxCoolingPower(), adraw.xFont("!Montserrat Bold@57"), x+414, y+305, MAIN_COLOR)
+        draw.SimpleText(SWS.Generators.Reactor:GetCoolingPower(), adraw.xFont("!Montserrat Bold@57"), x+414, y+255, MAIN_COLOR)
+        draw.SimpleText(SWS.Generators.Reactor:GetMaxCoolingPower(), adraw.xFont("!Montserrat Bold@57"), x+414, y+305, MAIN_COLOR)
 
         -- draw bars ----------------------------------------------------------------
         surface.SetDrawColor(BLUE_COLOR)
         
         local pos = x+8.5
-        for i=1, SWS.Reactor:GetCoolingPower() do
+        for i=1, SWS.Generators.Reactor:GetCoolingPower() do
             surface.DrawRect(pos, y+274, 24, 76)
             pos = pos + 40
         end
@@ -91,14 +87,14 @@ if CLIENT then
     local function drawHeatScreen(ent, x, y)
 
         -- draw text ---------------------------------------------------------------
-        draw.SimpleText(SWS.Reactor:GetHeat(), adraw.xFont("!Montserrat Bold@57"), x+414, y+255, MAIN_COLOR)
-        draw.SimpleText(SWS.Reactor:GetMaxHeat(), adraw.xFont("!Montserrat Bold@57"), x+414, y+305, MAIN_COLOR)
+        draw.SimpleText(SWS.Generators.Reactor:GetHeat(), adraw.xFont("!Montserrat Bold@57"), x+414, y+255, MAIN_COLOR)
+        draw.SimpleText(SWS.Generators.Reactor:GetMaxHeat(), adraw.xFont("!Montserrat Bold@57"), x+414, y+305, MAIN_COLOR)
 
         -- draw bars ----------------------------------------------------------------
         surface.SetDrawColor(RED_COLOR)
         
         local pos = x+8.5
-        for i=1, SWS.Reactor:GetHeat() do
+        for i=1, SWS.Generators.Reactor:GetHeat() do
             surface.DrawRect(pos, y+274, 24, 76)
             pos = pos + 40
         end
@@ -107,7 +103,7 @@ if CLIENT then
     function ENT:DrawTranslucent(flags)
         self:Draw( flags )
     
-        if not SWS.Reactor then return end
+        if not SWS.Generators.Reactor then return end
     
         if adraw.Entity3D2D(self, Vector(2.15, 0, 45.7), Angle(0,90,61.5), 0.01) then
             -- power screen --------------------------------------------------------
@@ -130,23 +126,23 @@ if CLIENT then
             --draw.RoundedBox(0, 0, 0, 2600, 800, BACKGROUND_COLOR)
 
             if adraw.xTextButton("+", adraw.xFont("!Montserrat Bold@100"), 160, 0-10, 120, 120, 10, MAIN_COLOR, ORANGE_COLOR, MAIN_COLOR) then
-                SWS.Reactor:SetCoolingPower(SWS.Reactor:GetCoolingPower()+1)
+                SWS.Generators.Reactor:SetCoolingPower(SWS.Generators.Reactor:GetCoolingPower()+1)
             end
 
             if adraw.xTextButton("-", adraw.xFont("!Montserrat Bold@100"), 160, 120, 120, 120, 10, MAIN_COLOR, ORANGE_COLOR, MAIN_COLOR) then
-                SWS.Reactor:SetCoolingPower(SWS.Reactor:GetCoolingPower()-1)
+                SWS.Generators.Reactor:SetCoolingPower(SWS.Generators.Reactor:GetCoolingPower()-1)
             end
 
             if adraw.xTextButton("+", adraw.xFont("!Montserrat Bold@100"), 1675, 0, 120, 120, 10, MAIN_COLOR, ORANGE_COLOR, MAIN_COLOR) then
-                SWS.Reactor:SetPowerOutput(SWS.Reactor:GetPowerOutput()+1)
+                SWS.Generators.Reactor:SetPowerOutput(SWS.Generators.Reactor:GetPowerOutput()+1)
             end
 
             if adraw.xTextButton("-", adraw.xFont("!Montserrat Bold@100"), 1675, 140, 120, 120, 10, MAIN_COLOR, ORANGE_COLOR, MAIN_COLOR) then
-                SWS.Reactor:SetPowerOutput(SWS.Reactor:GetPowerOutput()-1)
+                SWS.Generators.Reactor:SetPowerOutput(SWS.Generators.Reactor:GetPowerOutput()-1)
             end
 
             if adraw.xTextButton("SHUTDOWN", adraw.xFont("!Montserrat Bold@90"), 1435, 610, 520, 220, 10, ORANGE_COLOR, RED_COLOR, ORANGE_COLOR) then
-                SWS.Reactor:SetPowerOutput(0)
+                SWS.Generators.Reactor:SetPowerOutput(0)
             end
 
             adraw.End3D2D()

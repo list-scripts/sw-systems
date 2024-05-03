@@ -1,5 +1,4 @@
 SWS = SWS or {}
-SWS.ENUM = SWS.ENUM or {}
 SWS.Power = SWS.Power or {}
 
 SWS.Power.totalPower = 0
@@ -40,9 +39,5 @@ function SWS.Power:GetSystemMaxPower(identifier)
 end
 
 function SWS.Power:GetSystemPower(identifier)
-    return SWS.Power:GetSystem(identifier).power
-end
-
-function SWS.Power:GetSystemUpdateFunc(identifier)
-    return SWS.Power:GetSystem(identifier).update
+    return SWS.Power:GetSystem(identifier).currentPower
 end

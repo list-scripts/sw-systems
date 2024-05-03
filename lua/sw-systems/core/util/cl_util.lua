@@ -1,5 +1,6 @@
 SWS = SWS or {}
-SWS.ENUM = SWS.ENUM or {}
+SWS.Generators = SWS.Generators or {}
+SWS.Generators.Reactor = SWS.Generators.Reactor or {}
 
 -- maybe use this later, dunno
 --[[
@@ -99,10 +100,10 @@ hook.Add("Think", "SWS.Reactor.Debug", function()
             addText(system.name, system.currentPower, system.maxPower)
         end
         addText("\t---------------------------")
-        addText("status", SWS.Reactor.status)
-        addText("powerOutput", SWS.Reactor.powerOutput, SWS.Reactor.MAX_POWER_OUTPUT)
-        addText("coolingPower", SWS.Reactor.coolingPower, SWS.Reactor.MAX_COOLING_POWER)
-        addText("heat", SWS.Reactor.heat, SWS.Reactor.MAX_HEAT)
+        addText("status", SWS.Generators.Reactor.status)
+        addText("powerOutput", SWS.Generators.Reactor.powerOutput, SWS.Generators.Reactor.MAX_POWER_OUTPUT)
+        addText("coolingPower", SWS.Generators.Reactor.coolingPower, SWS.Generators.Reactor.MAX_COOLING_POWER)
+        addText("heat", SWS.Generators.Reactor.heat, SWS.Generators.Reactor.MAX_HEAT)
     addText("└────────────────────┘")
 
     lastDraw = CurTime() + UPDATE_TIME

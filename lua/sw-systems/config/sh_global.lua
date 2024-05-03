@@ -1,7 +1,6 @@
 SWS = SWS or {}
-SWS.ENUM = SWS.ENUM or {}
 
-SWS.ENTITY_CATEGORY = "[SW: Systems] "
+SWS.CATEGORY_PREFIX = "[SW: Systems] "
 
 -- the minimum range for entities to be interactible
 SWS.ENTITY_RANGE = 8000

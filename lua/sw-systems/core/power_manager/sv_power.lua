@@ -1,5 +1,4 @@
 SWS = SWS or {}
-SWS.ENUM = SWS.ENUM or {}
 SWS.Power = SWS.Power or {}
 
 SWS.Power.POLL_INTERVAL = 5
@@ -50,13 +49,13 @@ function SWS.Power:RemovePower(power)
     net.Broadcast()
 end
 
+-- don't use this function to set power, use AllocatePower instead
+-- its only for internal use
 function SWS.Power:SetSystemPower(identifier, newValue)
     local system, index = SWS.Power:GetSystem(identifier)
     system.currentPower = math.Clamp(newValue, 0, SWS.Power:GetSystemMaxPower(identifier))
 
-    -- inform the system that its power allocation has changed
-    local updateFunc = SWS.Power:GetSystemUpdateFunc(identifier)
-    updateFunc(SWS.Power:GetSystemPower(identifier))
+    system.reference:HandlePowerChange(SWS.Power:GetSystemPower(identifier))
 
     net.Start("SWS.Power.UpdateSystem")
         net.WriteUInt(index, 8)
@@ -90,8 +89,8 @@ end
 // Power Provider Management //
 ///////////////////////////////
 
-function SWS.Power:RegisterPowerProvider(name, getPowerFunc)
-    table.insert(SWS.Power.powerProvider, {name = name, getPower = getPowerFunc})
+function SWS.Power:RegisterPowerProvider(name, reference)
+    table.insert(SWS.Power.powerProvider, {name = name, reference = reference})
 end
 
 function SWS.Power:UnregisterPowerProvider(name)
@@ -105,7 +104,7 @@ end
 timer.Create("SWS.Power.PollPower", SWS.Power.POLL_INTERVAL, 0, function()
     local availablePower = 0
     for i, powerProvider in ipairs(SWS.Power.powerProvider) do
-        availablePower = availablePower + powerProvider:getPower()
+        availablePower = availablePower + powerProvider.reference:GetPowerOutput()
     end
 
     if availablePower > SWS.Power:GetTotalPower() then
@@ -119,8 +118,8 @@ end)
 // System Management //
 ///////////////////////
 
-function SWS.Power:RegisterSystem(name, maxPower, update)
-    local system = {name = name, currentPower = 0, maxPower = maxPower, update = update}
+function SWS.Power:RegisterSystem(name, maxPower, reference)
+    local system = {name = name, currentPower = 0, maxPower = maxPower, reference = reference}
     table.insert(SWS.Power.activeSystems, system)
 
     net.Start("SWS.Power.RegisterSystem")

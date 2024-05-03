@@ -1,5 +1,4 @@
 SWS = SWS or {}
-SWS.ENUM = SWS.ENUM or {}
 
 local load_queue = {}
 

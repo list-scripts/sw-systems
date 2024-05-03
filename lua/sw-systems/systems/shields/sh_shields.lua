@@ -1,9 +1,9 @@
 SWS = SWS or {}
 
 local SYSTEM = {}
-SYSTEM.IDENTIFIER = "Engines"
+SYSTEM.IDENTIFIER = "Shields"
 
-SYSTEM.NAME = "Engines"
+SYSTEM.NAME = "Shields"
 SYSTEM.MAX_POWER = 10
 
 SWS.LoadSystem(SYSTEM)

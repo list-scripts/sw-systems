@@ -1,5 +1,14 @@
 SWS = SWS or {}
-SWS.ENUM = SWS.ENUM or {}
-SWS.Shields = SWS.Shields or {}
 
---SWS.Power:RegisterSystem("Shields", 10, function() end)
+local SYSTEM = {}
+SYSTEM.IDENTIFIER = "Shields"
+
+function SYSTEM:Initialize()
+    SWS.Power:RegisterSystem(self.IDENTIFIER, self.MAX_POWER, self)
+end
+
+function SYSTEM:HandlePowerChange(newPower)
+    
+end
+
+SWS.LoadSystem(SYSTEM)

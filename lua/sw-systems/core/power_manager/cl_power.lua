@@ -1,5 +1,4 @@
 SWS = SWS or {}
-SWS.ENUM = SWS.ENUM or {}
 SWS.Power = SWS.Power or {}
 
 net.Receive("SWS.Power.SyncData", function(len, ply)

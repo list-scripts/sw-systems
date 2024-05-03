@@ -1,5 +1,4 @@
 SWS = SWS or {}
-SWS.ENUM = SWS.ENUM or {}
 SWS.Reactor = SWS.Reactor or {}
 
 local adraw = adraw
@@ -11,14 +10,12 @@ ENT.ClassName = name
 
 ENT.PrintName = "Power Terminal"
 ENT.Author = "senfauge & Luiggi33"
-ENT.Category = SWS.ENTITY_CATEGORY.."Power"
+ENT.Category = SWS.CATEGORY_PREFIX.."Power"
 ENT.Spawnable = true
-
-ENT.ModelPath = "models/dolunity/swo/terminal.mdl"
 
 if SERVER then 
     function ENT:Initialize()
-        self:SetModel(self.ModelPath)
+        self:SetModel("models/dolunity/swo/terminal.mdl")
         self:PhysicsInit(SOLID_VPHYSICS)
         self:SetMoveType(MOVETYPE_VPHYSICS)
         self:SetSolid(SOLID_VPHYSICS)

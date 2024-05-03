@@ -1,6 +1,7 @@
 SWS = SWS or {}
-SWS.ENUM = SWS.ENUM or {}
 SWS.Systems = SWS.Systems or {}
+
+SWS.Systems.directory = SWS.directory.."/systems"
 
 local loadQueue = {}
 local firstLoad = true
@@ -10,7 +11,7 @@ function SWS.LoadSystem(SYSTEM)
     table.Merge(loadQueue[SYSTEM.IDENTIFIER], SYSTEM)
 end
 
-SWS.includeDir("systems")
+SWS.includeDir(SWS.Systems.directory, true)
 
 for _, SYSTEM in pairs(loadQueue) do
     SYSTEM.NAME = SYSTEM.NAME or "Unnamed System"
@@ -22,4 +23,6 @@ for _, SYSTEM in pairs(loadQueue) do
     SYSTEM.LOADED = true
     SYSTEM:Initialize()
     firstLoad = false
+
+    SWS.includeDir(SWS.Systems.directory.."/"..string.lower(SYSTEM.IDENTIFIER).."/entities", false)
 end
