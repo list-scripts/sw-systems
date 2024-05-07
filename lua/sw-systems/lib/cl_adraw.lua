@@ -18,6 +18,7 @@ adraw.skin = {
 }
 
 local devCvar = GetConVar("developer")
+adraw.DisableDeveloperMode = true
 
 function adraw.IsDeveloperMode()
     return not adraw.DisableDeveloperMode and devCvar:GetInt() > 0
