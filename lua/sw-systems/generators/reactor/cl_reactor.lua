@@ -3,7 +3,7 @@ SWS = SWS or {}
 local GENERATOR = {}
 GENERATOR.IDENTIFIER = "Reactor"
 
-GENERATOR.ICON = Material("sw-systems/icons/reactor.png")
+GENERATOR.ICON = Material("sw-systems/icons/generators/reactor.png", "noclamp smooth")
 
 function GENERATOR:Initialize()
     

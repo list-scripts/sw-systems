@@ -77,17 +77,15 @@ util.AddNetworkString("SWS.Reactor.Heat")
 util.AddNetworkString("SWS.Reactor.SyncData")
 
 net.Receive("SWS.Reactor.Power", function(len, ply)
-    if not SWS.IsAdmin(ply) then return end
     local trEnt = ply:GetEyeTraceNoCursor().Entity
-    if trEnt and trEnt ~= NULL and trEnt:GetClass() == "sws_reactor_terminal" then
+    if (trEnt and trEnt ~= NULL and trEnt:GetClass() == "sws_reactor_terminal") or SWS.IsAdmin(ply) then
         SWS.Generators.Reactor:SetPowerOutput(net.ReadUInt(8))
     end
 end)
 
 net.Receive("SWS.Reactor.Cooling", function(len, ply)
-    if not SWS.IsAdmin(ply) then return end
     local trEnt = ply:GetEyeTraceNoCursor().Entity
-    if trEnt and trEnt ~= NULL and trEnt:GetClass() == "sws_reactor_terminal" then
+    if (trEnt and trEnt ~= NULL and trEnt:GetClass() == "sws_reactor_terminal") or SWS.IsAdmin(ply) then
         SWS.Generators.Reactor:SetCoolingPower(net.ReadUInt(8))
     end
 end)

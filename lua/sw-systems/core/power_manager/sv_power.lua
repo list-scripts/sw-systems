@@ -1,7 +1,7 @@
 SWS = SWS or {}
 SWS.Power = SWS.Power or {}
 
-SWS.Power.POLL_INTERVAL = 5
+SWS.Power.POLL_INTERVAL = 2
 
 //////////////////////
 // Power Management //
@@ -34,7 +34,7 @@ function SWS.Power:RemovePower(power)
             if remainder <= 0 then break end
             if SWS.Power:GetSystemPower(index) > 0 then
                 local powerToRemove = SWS.Power:GetSystemPower(index) > remainder and remainder or SWS.Power:GetSystemPower(index)
-                SWS.Power:SetSystemPower(system.name, SWS.Power:GetSystemPower(index) - powerToRemove)
+                SWS.Power:SetSystemPower(index, SWS.Power:GetSystemPower(index) - powerToRemove)
                 remainder = remainder - powerToRemove
             end
         end
@@ -91,12 +91,18 @@ end
 
 function SWS.Power:RegisterGenerator(generator)
     table.insert(SWS.Power.activeGenerators, generator)
+    net.Start("SWS.Power.RegisterGenerator")
+        net.WriteString(generator.IDENTIFIER)
+    net.Broadcast()
 end
 
 function SWS.Power:UnregisterGenerator(identifier)
-    for i, generator in ipairs(SWS.Power.activeGenerators) do
+    for index, generator in ipairs(SWS.Power.activeGenerators) do
         if generator.IDENTIFIER == identifier then
-            table.remove(SWS.Power.activeGenerators, i)
+            table.remove(SWS.Power.activeGenerators, index)
+            net.Start("SWS.Power.UnregisterGenerator")
+                net.WriteUInt(index, 8)
+            net.Broadcast()
         end
     end
 end
@@ -173,13 +179,59 @@ util.AddNetworkString("SWS.Power.UpdatePower")
 util.AddNetworkString("SWS.Power.SwapSystems")
 util.AddNetworkString("SWS.Power.RegisterSystem")
 util.AddNetworkString("SWS.Power.UnregisterSystem")
+util.AddNetworkString("SWS.Power.RegisterGenerator")
+util.AddNetworkString("SWS.Power.UnregisterGenerator")
+util.AddNetworkString("SWS.Power.IncreaseSystemPriority")
+util.AddNetworkString("SWS.Power.DecreaseSystemPriority")
+util.AddNetworkString("SWS.Power.IncreasePower")
+util.AddNetworkString("SWS.Power.DecreasePower")
+
+net.Receive("SWS.Power.IncreaseSystemPriority", function(len, ply)
+    local trEnt = ply:GetEyeTraceNoCursor().Entity
+    if (trEnt and trEnt ~= NULL and trEnt:GetClass() == "sws_power_terminal") or SWS.IsAdmin(ply) then
+        SWS.Power:IncreaseSystemPriority(net.ReadUInt(8))
+    end
+end)
+
+net.Receive("SWS.Power.DecreaseSystemPriority", function(len, ply)
+    local trEnt = ply:GetEyeTraceNoCursor().Entity
+    if (trEnt and trEnt ~= NULL and trEnt:GetClass() == "sws_power_terminal") or SWS.IsAdmin(ply) then
+        SWS.Power:DecreaseSystemPriority(net.ReadUInt(8))
+    end
+end)
+
+net.Receive("SWS.Power.IncreasePower", function(len, ply)
+    local trEnt = ply:GetEyeTraceNoCursor().Entity
+    if (trEnt and trEnt ~= NULL and trEnt:GetClass() == "sws_power_terminal") or SWS.IsAdmin(ply) then
+        local system, index = SWS.Power:GetSystem(net.ReadUInt(8))
+        SWS.Power:AllocatePower(index, system.power + 1)
+    end
+end)
+
+net.Receive("SWS.Power.DecreasePower", function(len, ply)
+    local trEnt = ply:GetEyeTraceNoCursor().Entity
+    if (trEnt and trEnt ~= NULL and trEnt:GetClass() == "sws_power_terminal") or SWS.IsAdmin(ply) then
+        local system, index = SWS.Power:GetSystem(net.ReadUInt(8))
+        SWS.Power:AllocatePower(index, system.power - 1)
+    end
+end)
 
 hook.Add("SWS.PlayerLoaded", "SWS.Power.SyncData", function(ply)
     net.Start("SWS.Power.SyncData")
         net.WriteUInt(SWS.Power:GetTotalPower(), 8)
         net.WriteUInt(SWS.Power:GetFreePower(), 8)
 
-        net.WriteString(util.TableToJSON(table.Copy(SWS.Power.activeGenerators)))
-        net.WriteString(util.TableToJSON(table.Copy(SWS.Power.activeSystems)))
+        local generatorIdentifiers = {}
+        for i, generator in ipairs(SWS.Power.activeGenerators) do
+            table.insert(generatorIdentifiers, generator.IDENTIFIER)
+        end
+
+        local systemIdentifiers = {}
+        for i, system in ipairs(SWS.Power.activeSystems) do
+            table.insert(systemIdentifiers, system.IDENTIFIER)
+        end
+
+        net.WriteString(util.TableToJSON(table.Copy(generatorIdentifiers)))
+        net.WriteString(util.TableToJSON(table.Copy(systemIdentifiers)))
     net.Send(ply)
 end)
