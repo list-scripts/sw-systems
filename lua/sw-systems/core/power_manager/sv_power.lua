@@ -125,12 +125,19 @@ end)
 ///////////////////////
 
 function SWS.Power:RegisterSystem(system)
-    --local system = {name = name, currentPower = 0, maxPower = maxPower, reference = reference}
-    table.insert(SWS.Power.activeSystems, system)
+    local index = table.insert(SWS.Power.activeSystems, system)
 
     net.Start("SWS.Power.RegisterSystem")
         net.WriteString(system.IDENTIFIER)
     net.Broadcast()
+
+    if system.PREFERRED_INITIAL_POWER then
+        -- this is hacky, maybe there is a better way
+        -- need to wait for the generators to provide power first
+        timer.Simple(5, function()
+            SWS.Power:AllocatePower(index, system.PREFERRED_INITIAL_POWER)
+        end)
+    end
 end
 
 function SWS.Power:UnregisterSystem(identifier)
