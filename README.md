@@ -14,3 +14,9 @@
 - Avoid the use of expensive functions such as players.GetAll() or ents.GetAll and reduce the amount of calls if used
 - Don't use NW or NW2 Vars
 - Try to only network the minimal data necessary
+
+# Dependencies
+### Reactor
+- https://steamcommunity.com/sharedfiles/filedetails/?id=1987994709
+### (optional) Engines and Hyperdrive
+- https://steamcommunity.com/sharedfiles/filedetails/?id=2735358488
