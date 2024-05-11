@@ -31,7 +31,7 @@ if SERVER then
         if (phys:IsValid()) then
             phys:Wake()
         end
-        self:SetAngles(self:GetAngles() + Angle(0,-90,0))
+        --self:SetAngles(self:GetAngles() + Angle(0,-90,0))
     end
 end
 
