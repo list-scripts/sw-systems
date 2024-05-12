@@ -5,7 +5,9 @@ SYSTEM.IDENTIFIER = "Hyperdrive"
 
 function SYSTEM:Initialize()
     if SWU then 
-        SWS.Power:RegisterSystem(self)
+        if SWU.Controller then
+            SWS.Power:RegisterSystem(self)
+        end
     else
         hook.Add("SWU.Loaded", "SWS.Hyperdrive.Register", function()
             SWS.Power:RegisterSystem(self)
