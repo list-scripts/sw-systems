@@ -4,17 +4,13 @@ local SYSTEM = {}
 SYSTEM.IDENTIFIER = "Hyperdrive"
 
 function SYSTEM:Initialize()
-    if SWU then 
-        if SWU.Controller then
-            SWS.Power:RegisterSystem(self)
-        end
-    else
-        hook.Add("SWU.Loaded", "SWS.Hyperdrive.Register", function()
-            SWS.Power:RegisterSystem(self)
-            hook.Remove("SWU.Loaded", "SWS.Hyperdrive.Register")
-        end)
-    end
+
 end
+
+hook.Add("SWU.MapLoaded", "SWS.Hyperdrive.Register", function()
+    SWS.Power:RegisterSystem(SWS.Systems.Hyperdrive)
+    hook.Remove("SWU.MapLoaded", "SWS.Hyperdrive.Register")
+end)
 
 function SYSTEM:HandlePowerChange(newPower)
     local modifier = self.MODIFIER_PER_POWER[newPower] or 0

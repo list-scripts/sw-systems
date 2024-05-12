@@ -4,17 +4,13 @@ local SYSTEM = {}
 SYSTEM.IDENTIFIER = "Engines"
 
 function SYSTEM:Initialize()
-    if SWU then 
-        if SWU.Controller then
-            SWS.Power:RegisterSystem(self)
-        end
-    else
-        hook.Add("SWU.Loaded", "SWS.Engines.Register", function()
-            SWS.Power:RegisterSystem(self)
-            hook.Remove("SWU.Loaded", "SWS.Engines.Register")
-        end)
-    end
+
 end
+
+hook.Add("SWU.MapLoaded", "SWS.Engines.Register", function()
+    SWS.Power:RegisterSystem(SWS.Systems.Engines)
+    hook.Remove("SWU.MapLoaded", "SWS.Engines.Register")
+end)
 
 function SYSTEM:HandlePowerChange(newPower)
     local acceleration = self.ACCELERATION_PER_POWER[newPower] or 0
