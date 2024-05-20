@@ -9,12 +9,12 @@ SYSTEM.power = 0
 SYSTEM.PREFERRED_INITIAL_POWER = 1
 
 SYSTEM.MODIFIER_PER_POWER = {
-    [0] = 0.1,
-    [1] = 0.5,
-    [2] = 0.75,
-    [3] = 1,
-    [4] = 1.25,
-    [5] = 1.5
+    [0] = 0.01,
+    [1] = 0.2,
+    [2] = 0.4,
+    [3] = 0.6,
+    [4] = 0.8,
+    [5] = 1
 }
 
 SWS.LoadSystem(SYSTEM)
