@@ -26,7 +26,7 @@ if SERVER then
         net.Send(self)
     end
     
-    local chat  = chat or {}
+    chat  = chat or {}
     function chat.ChatBroadcast(tbl)
         tbl = istable(tbl) and tbl or {tbl}
         local newTbl = {}
