@@ -19,6 +19,8 @@ end)
 net.Receive("SWS.Power.UpdateSystem", function(len, ply)
     local index = net.ReadUInt(8)
     local newPower = net.ReadUInt(8)
+    
+    if SWS.Power.activeSystems[index] == nil then return end
     SWS.Power.activeSystems[index].power = newPower
 end)
 
@@ -31,6 +33,7 @@ net.Receive("SWS.Power.SwapSystems", function(len, ply)
     local index1 = net.ReadUInt(8)
     local index2 = net.ReadUInt(8)
 
+    if SWS.Power.activeSystems[index1] == nil or SWS.Power.activeSystems[index2] == nil then return end
     local temp = table.Copy(SWS.Power.activeSystems[index1])
     SWS.Power.activeSystems[index1] = table.Copy(SWS.Power.activeSystems[index2])
     SWS.Power.activeSystems[index2] = table.Copy(temp)
