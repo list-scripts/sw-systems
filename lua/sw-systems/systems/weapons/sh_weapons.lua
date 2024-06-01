@@ -1,0 +1,11 @@
+SWS = SWS or {}
+
+local SYSTEM = {}
+SYSTEM.IDENTIFIER = "Weapons"
+
+SYSTEM.NAME = "Weapons"
+SYSTEM.MAX_POWER = 5
+SYSTEM.power = 0
+SYSTEM.PREFERRED_INITIAL_POWER = 1
+
+SWS.LoadSystem(SYSTEM)
