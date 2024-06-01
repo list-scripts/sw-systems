@@ -13,7 +13,6 @@ hook.Add("SWU.MapLoaded", "SWS.Hyperdrive.Register", function()
 end)
 
 function SYSTEM:HandlePowerChange(newPower, oldPower)
-    hook.Run("SWS.Hyperdrive.PowerChange", newPower, oldPower)
     local modifier = self.MODIFIER_PER_POWER[newPower] or 0
     self:ChangeHyperspaceSpeed(modifier)
 

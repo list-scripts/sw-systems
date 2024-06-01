@@ -13,7 +13,6 @@ hook.Add("SWU.MapLoaded", "SWS.Engines.Register", function()
 end)
 
 function SYSTEM:HandlePowerChange(newPower, oldPower)
-    hook.Run("SWS.Engines.PowerChange", newPower, oldPower)
     local acceleration = self.ACCELERATION_PER_POWER[newPower] or 0
     SWU.Controller:SetTargetShipAccelerationLimit(acceleration)
 

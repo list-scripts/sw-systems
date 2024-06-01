@@ -32,9 +32,9 @@ function SWS.Power:RemovePower(power)
         for i = #SWS.Power.activeSystems, 1, -1 do
             local system, index = SWS.Power:GetSystem(i)
             if remainder <= 0 then break end
-            if SWS.Power:GetSystemPower(index) > 0 then
-                local powerToRemove = SWS.Power:GetSystemPower(index) > remainder and remainder or SWS.Power:GetSystemPower(index)
-                SWS.Power:SetSystemPower(index, SWS.Power:GetSystemPower(index) - powerToRemove)
+            if system:GetPower() > 0 then
+                local powerToRemove = system:GetPower() > remainder and remainder or system:GetPower()
+                SWS.Power:SetSystemPower(index, system:GetPower() - powerToRemove)
                 remainder = remainder - powerToRemove
             end
         end
@@ -51,15 +51,13 @@ end
 
 -- don't use this function to set power, use AllocatePower instead
 -- its only for internal use
-function SWS.Power:SetSystemPower(identifier, newValue)
+function SWS.Power:SetSystemPower(identifier, newPower)
     local system, index = SWS.Power:GetSystem(identifier)
-    local oldPower = system.power
-    system.power = math.Clamp(newValue, 0, SWS.Power:GetSystemMaxPower(identifier))
-    system:HandlePowerChange(system.power, oldPower)
+    system:SetPower(newPower)
 
     net.Start("SWS.Power.UpdateSystem")
         net.WriteUInt(index, 8)
-        net.WriteUInt(system.power, 8)
+        net.WriteUInt(system:GetPower(), 8)
     net.Broadcast()
 end
 
@@ -77,10 +75,10 @@ function SWS.Power:AllocatePower(identifier, power)
         if SWS.Power:GetFreePower() <= 0 then return end
         local additionalPower = SWS.Power:GetFreePower() >= powerDiff and powerDiff or SWS.Power:GetFreePower()
 
-        SWS.Power:SetSystemPower(identifier, SWS.Power:GetSystemPower(identifier) + additionalPower)
+        SWS.Power:SetSystemPower(identifier, system:GetPower() + additionalPower)
         SWS.Power:SetFreePower(SWS.Power:GetFreePower() - additionalPower)
     else
-        SWS.Power:SetSystemPower(identifier, SWS.Power:GetSystemPower(identifier) - powerDiff)
+        SWS.Power:SetSystemPower(identifier, system:GetPower() - powerDiff)
         SWS.Power:SetFreePower(SWS.Power:GetFreePower() + powerDiff)
     end
 end
@@ -92,13 +90,13 @@ end
 function SWS.Power:RegisterGenerator(generator)
     table.insert(SWS.Power.activeGenerators, generator)
     net.Start("SWS.Power.RegisterGenerator")
-        net.WriteString(generator.IDENTIFIER)
+        net.WriteString(generator:GetIdentifier())
     net.Broadcast()
 end
 
 function SWS.Power:UnregisterGenerator(identifier)
     for index, generator in ipairs(SWS.Power.activeGenerators) do
-        if generator.IDENTIFIER == identifier then
+        if generator:GetIdentifier() == identifier then
             table.remove(SWS.Power.activeGenerators, index)
             net.Start("SWS.Power.UnregisterGenerator")
                 net.WriteUInt(index, 8)
@@ -128,7 +126,7 @@ function SWS.Power:RegisterSystem(system)
     local index = table.insert(SWS.Power.activeSystems, system)
 
     net.Start("SWS.Power.RegisterSystem")
-        net.WriteString(system.IDENTIFIER)
+        net.WriteString(system:GetIdentifier())
     net.Broadcast()
 
     if system.PREFERRED_INITIAL_POWER then
@@ -230,12 +228,12 @@ hook.Add("SWS.PlayerLoaded", "SWS.Power.SyncData", function(ply)
 
         local generatorIdentifiers = {}
         for i, generator in ipairs(SWS.Power.activeGenerators) do
-            table.insert(generatorIdentifiers, generator.IDENTIFIER)
+            table.insert(generatorIdentifiers, generator:GetIdentifier())
         end
 
         local systemIdentifiers = {}
         for i, system in ipairs(SWS.Power.activeSystems) do
-            table.insert(systemIdentifiers, system.IDENTIFIER)
+            table.insert(systemIdentifiers, system:GetIdentifier())
         end
 
         net.WriteString(util.TableToJSON(table.Copy(generatorIdentifiers)))

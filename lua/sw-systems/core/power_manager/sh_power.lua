@@ -24,7 +24,7 @@ function SWS.Power:GetSystemIndexByName(name)
 end
 
 function SWS.Power:GetSystemNameByIndex(name)
-    return SWS.Power.activeSystems[index].name
+    return SWS.Power.activeSystems[index]:GetName()
 end
 
 function SWS.Power:GetSystem(identifier)
@@ -32,12 +32,4 @@ function SWS.Power:GetSystem(identifier)
         identifier = SWS.Power:GetSystemIndexByName(identifier)
     end
     return SWS.Power.activeSystems[identifier], identifier
-end
-
-function SWS.Power:GetSystemMaxPower(identifier)
-    return SWS.Power:GetSystem(identifier).MAX_POWER
-end
-
-function SWS.Power:GetSystemPower(identifier)
-    return SWS.Power:GetSystem(identifier).power
 end

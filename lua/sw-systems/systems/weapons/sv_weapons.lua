@@ -8,7 +8,7 @@ function SYSTEM:Initialize()
 end
 
 function SYSTEM:HandlePowerChange(newPower, oldPower)
-    hook.Run("SWS.Weapons.PowerChange", newPower, oldPower)
+    
 end
 
 SWS.LoadSystem(SYSTEM)
