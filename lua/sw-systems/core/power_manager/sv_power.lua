@@ -53,10 +53,9 @@ end
 -- its only for internal use
 function SWS.Power:SetSystemPower(identifier, newValue)
     local system, index = SWS.Power:GetSystem(identifier)
-    system.power = math.Clamp(newValue, 0, SWS.Power:GetSystemMaxPower(identifier))
-
     system:HandlePowerChange(SWS.Power:GetSystemPower(identifier))
-
+    system.power = math.Clamp(newValue, 0, SWS.Power:GetSystemMaxPower(identifier))
+    
     net.Start("SWS.Power.UpdateSystem")
         net.WriteUInt(index, 8)
         net.WriteUInt(system.power, 8)
