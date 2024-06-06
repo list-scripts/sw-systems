@@ -3,10 +3,12 @@ SWS.Reactor = SWS.Reactor or {}
 
 local adraw = adraw
 
+local className = "sws_power_terminal"
+
 ENT = {}
 ENT.Base = "base_entity"
 ENT.Type = "anim"
-ENT.ClassName = name
+ENT.ClassName = className
 
 ENT.PrintName = "Power Terminal"
 ENT.Author = "List-Scripts"
@@ -259,4 +261,4 @@ if CLIENT then
     end
 end
 
-scripted_ents.Register(ENT, "sws_power_terminal")
+scripted_ents.Register(ENT, className)
