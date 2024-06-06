@@ -9,7 +9,7 @@ ENT.Type = "anim"
 ENT.ClassName = name
 
 ENT.PrintName = "Power Terminal"
-ENT.Author = "senfauge & Luiggi33"
+ENT.Author = "List-Scripts"
 ENT.Category = SWS.CATEGORY_PREFIX.."Power"
 ENT.Spawnable = true
 

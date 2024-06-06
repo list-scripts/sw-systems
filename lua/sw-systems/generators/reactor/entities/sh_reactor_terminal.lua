@@ -8,7 +8,7 @@ ENT.Type = "anim"
 ENT.ClassName = name
 
 ENT.PrintName = "Reactor Terminal"
-ENT.Author = "senfauge & Luiggi33"
+ENT.Author = "List-Scripts"
 ENT.Category = SWS.CATEGORY_PREFIX.."Reactor"
 ENT.Spawnable = true
 
