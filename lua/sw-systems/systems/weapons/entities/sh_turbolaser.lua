@@ -15,7 +15,7 @@ ENT.Category = SWS.CATEGORY_PREFIX.."Weapons"
 ENT.Spawnable = true
 
 ENT.Model = "models/props/starwars/weapons/imperial_turbolaser.mdl"
-ENT.HP = 10
+ENT.HP = 20000
 
 ENT.SmokeFXConfig = {
     {pos = Vector(0, 0, 350)},
