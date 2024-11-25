@@ -1,7 +1,7 @@
 SWS = SWS or {}
 SWS.Systems = SWS.Systems or {}
 
-SWS.Systems.directory = SWS.directory.."/systems"
+SWS.systemDirectory = SWS.directory.."/systems"
 
 /////////////////
 // System Meta //
@@ -50,11 +50,15 @@ local loadQueue = {}
 local firstLoad = true
 
 function SWS.LoadSystem(SYSTEM)
-    loadQueue[SYSTEM.IDENTIFIER] = loadQueue[SYSTEM.IDENTIFIER] or {}
-    table.Merge(loadQueue[SYSTEM.IDENTIFIER], SYSTEM)
+    if firstLoad then
+        loadQueue[SYSTEM.IDENTIFIER] = loadQueue[SYSTEM.IDENTIFIER] or {}
+        table.Merge(loadQueue[SYSTEM.IDENTIFIER], SYSTEM)
+    else
+        table.Merge(SWS.Systems[SYSTEM.IDENTIFIER], SYSTEM)
+    end
 end
 
-SWS.includeDir(SWS.Systems.directory, {entities = true})
+SWS.includeDir(SWS.systemDirectory, {entities = true})
 
 for _, SYSTEM in pairs(loadQueue) do
     setmetatable(SYSTEM, META_SYSTEM)
@@ -66,5 +70,5 @@ for _, SYSTEM in pairs(loadQueue) do
     SYSTEM:Initialize()
     firstLoad = false
 
-    SWS.includeDir(SWS.Systems.directory.."/"..string.lower(SYSTEM.IDENTIFIER).."/entities")
+    SWS.includeDir(SWS.systemDirectory.."/"..string.lower(SYSTEM.IDENTIFIER).."/entities")
 end

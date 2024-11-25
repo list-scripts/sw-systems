@@ -1,7 +1,7 @@
 SWS = SWS or {}
 SWS.Generators = SWS.Generators or {}
 
-SWS.Generators.directory = SWS.directory.."/generators"
+SWS.generatorDirectory = SWS.directory.."/generators"
 
 ///////////////////////
 // Generator Loading //
@@ -39,11 +39,15 @@ local loadQueue = {}
 local firstLoad = true
 
 function SWS.LoadGenerator(GENERATOR)
-    loadQueue[GENERATOR.IDENTIFIER] = loadQueue[GENERATOR.IDENTIFIER] or {}
-    table.Merge(loadQueue[GENERATOR.IDENTIFIER], GENERATOR)
+    if firstLoad then
+        loadQueue[GENERATOR.IDENTIFIER] = loadQueue[GENERATOR.IDENTIFIER] or {}
+        table.Merge(loadQueue[GENERATOR.IDENTIFIER], GENERATOR)
+    else
+        table.Merge(SWS.Generators[GENERATOR.IDENTIFIER], GENERATOR)
+    end
 end
 
-SWS.includeDir(SWS.Generators.directory, {entities = true})
+SWS.includeDir(SWS.generatorDirectory, {entities = true})
 
 for _, GENERATOR in pairs(loadQueue) do
     setmetatable(GENERATOR, META_GENERATOR)
@@ -55,5 +59,5 @@ for _, GENERATOR in pairs(loadQueue) do
     GENERATOR:Initialize()
     firstLoad = false
     
-    SWS.includeDir(SWS.Generators.directory.."/"..string.lower(GENERATOR.IDENTIFIER).."/entities")
+    SWS.includeDir(SWS.generatorDirectory.."/"..string.lower(GENERATOR.IDENTIFIER).."/entities")
 end
