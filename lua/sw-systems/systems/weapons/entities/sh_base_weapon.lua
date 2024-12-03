@@ -13,6 +13,11 @@ ENT.PrintName = "Base Weapon"
 ENT.Author = "List-Scripts"
 ENT.Category = SWS.CATEGORY_PREFIX.."Weapons"
 ENT.Spawnable = false
+ENT.IsEmplacement = true
+
+if CLIENT then
+    ENT.Icon = Material("sw-systems/icons/systems/weapons/turbolaser_icon.png")
+end
 
 ENT.Model = "models/props/starwars/weapons/hoth_turret2.mdl"
 ENT.HP = 100
@@ -113,10 +118,12 @@ if SERVER then
     end
 
     function ENT:Think()
-        if not self:IsDestroyed() then return end
-        self:DamageFX()
-        self:SmokeFX()
-        self:SparkFX()
+        if self:IsDestroyed() then self:DamageFX() end
+        if self:Health() / self:GetMaxHealth() <= 0.2 then self:SmokeFX() end
+        if self:Health() / self:GetMaxHealth() <= 0.5 then self:SparkFX() end
+
+        self:NextThink(CurTime()+0.1)
+        return true
     end
 
     ///////////////////////////
