@@ -2,17 +2,23 @@ SWS = SWS or {}
 SWS.Systems = SWS.Systems or {}
 SWS.Systems.Weapons = SWS.Systems.Weapons or {}
 
-local className = "sws_weapon_laser_turret_1"
+local className = "sws_weapon_1.4_fd_p_tower"
 
 ENT = {}
 ENT.Base = "sws_weapon_base"
 ENT.Type = "anim"
 ENT.ClassName = className
 
-ENT.PrintName = "Laser Turret 1"
+ENT.PrintName = "1.4 FD P-Tower"
+ENT.WeaponType = "Laser Cannon"
+ENT.TargetType = "Anti-Vehicle"
 ENT.Author = "List-Scripts"
 ENT.Category = SWS.CATEGORY_PREFIX.."Weapons"
 ENT.Spawnable = true
+
+if CLIENT then
+    ENT.Icon = Material("sw-systems/icons/systems/weapons/laserturret_icon.png")
+end
 
 ENT.Model = "models/props/starwars/weapons/hoth_turret.mdl"
 ENT.HP = 5000
@@ -25,10 +31,9 @@ ENT.SparkFXConfig = {
     {pos = Vector(0, 0, 50), direction = function() return Vector(0, 0, 0) end},
 }
 
-
 function ENT:Destroy() end
 
 function ENT:DamageFX() end
 
-
+SWS.Systems.Weapons.classIsEmplacement[className] = true
 scripted_ents.Register(ENT, className)

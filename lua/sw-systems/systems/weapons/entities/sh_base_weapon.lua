@@ -10,6 +10,8 @@ ENT.Type = "anim"
 ENT.ClassName = className
 
 ENT.PrintName = "Base Weapon"
+ENT.WeaponType = "Turbolaser"
+ENT.TargetType = "Anti-Ship"
 ENT.Author = "List-Scripts"
 ENT.Category = SWS.CATEGORY_PREFIX.."Weapons"
 ENT.Spawnable = false

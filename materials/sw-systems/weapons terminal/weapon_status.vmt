@@ -1,0 +1,8 @@
+"UnLitGeneric"
+{
+	"$basetexture"			"sw-systems/weapons terminal/weapon_status"
+	"$surfaceprop"			"glass"
+   	"$selfillum"			"1"
+	"$model"			"1"
+	"%notooltexture"		"1"
+} 

@@ -4,6 +4,7 @@ local SYSTEM = {}
 SYSTEM.IDENTIFIER = "Weapons"
 
 function SYSTEM:Initialize()
+    self:InitializeHooks()
     SWS.Power:RegisterSystem(self)
 end
 

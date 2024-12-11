@@ -416,6 +416,15 @@ function adraw.xButton(x, y, w, h, borderWidth, borderClr, hoverClr, pressColor)
     return shouldAcceptInput() and isHovering and gState.pressed, isHovering
 end
 
+function adraw.xSolidButton(x, y, w, h, defaultClr, hoverClr, pressColor)
+    local color = ((adraw.IsPressing() and adraw.IsHovering(x, y, w, h)) and (pressColor or adraw.skin.borderPress)) or (adraw.IsHovering(x, y, w, h) and (hoverClr or adraw.skin.borderHover)) or (defaultClr or adraw.skin.border)
+    surface.SetDrawColor(color)
+    surface.DrawRect(x, y, w, h)
+
+    local isHovering = adraw.IsHovering(x, y, w, h)
+    return shouldAcceptInput() and isHovering and gState.pressed, isHovering
+end
+
 function adraw.xOneColorButton(x, y, w, h, borderWidth, clr)
     local bw = borderWidth or 1
     surface.SetDrawColor(clr)
