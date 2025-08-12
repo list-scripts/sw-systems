@@ -1,3 +1,7 @@
+# About this repository
+This is an addon that I started to create. I haven't made much progress in the past year, so I will just publish the addon on here for now.
+Feel free to do whatever you, as long as you give proper credit. I will push changes whenever I like and however I like. This addon is not supported in any way in its form right now and maybe broken in its current development state.
+
 # Code Style Guidelines
 - Constants should be named as upper case string with an underscore between words
   `EXAMPLE_CONSTANT`
